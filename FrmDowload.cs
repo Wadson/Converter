@@ -674,6 +674,21 @@ namespace Converter
                     return;
                 }
 
+                // Encontrar a linha correspondente ao URL e selecionar
+                DataGridViewRow selectedRow = DataGridViewURL.Rows
+                    .Cast<DataGridViewRow>()
+                    .FirstOrDefault(r => r.Cells["URLs"].Value?.ToString() == url);
+
+                if (selectedRow != null)
+                {
+                    DataGridViewURL.Invoke((MethodInvoker)(() =>
+                    {
+                        DataGridViewURL.ClearSelection();
+                        selectedRow.Selected = true;
+                        DataGridViewURL.FirstDisplayedScrollingRowIndex = selectedRow.Index;
+                    }));
+                }
+
                 videoAtual++;
                 lblStatusContagem.Invoke((MethodInvoker)(() =>
                 {
@@ -681,6 +696,20 @@ namespace Converter
                 }));
 
                 await DownloadWork(url);
+                //if (cancelToken.IsCancellationRequested)
+                //{
+                //    lblStatusContagem.Invoke((MethodInvoker)(() => lblStatusContagem.Text = "Download cancelado!"));
+                //    Status.Text = "Download interrompido!";
+                //    return;
+                //}
+
+                //videoAtual++;
+                //lblStatusContagem.Invoke((MethodInvoker)(() =>
+                //{
+                //    lblStatusContagem.Text = $"Baixando... {videoAtual}/{totalVideos}";
+                //}));
+
+                //await DownloadWork(url);
             }
 
             lblStatusContagem.Invoke((MethodInvoker)(() =>

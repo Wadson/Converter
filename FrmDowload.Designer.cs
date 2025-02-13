@@ -31,6 +31,8 @@
             this.components = new System.ComponentModel.Container();
             this.kryptonPalette1 = new ComponentFactory.Krypton.Toolkit.KryptonPalette(this.components);
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.chkAudioOnly = new System.Windows.Forms.CheckBox();
+            this.lblTotalLinks = new System.Windows.Forms.Label();
             this.btnBrowse = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.lblProgress = new System.Windows.Forms.Label();
@@ -56,13 +58,11 @@
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.Status = new System.Windows.Forms.ToolStripStatusLabel();
             this.Dataprogress = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabelStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.btnFechar = new System.Windows.Forms.PictureBox();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.Downloader_BackProcess = new System.ComponentModel.BackgroundWorker();
             this.bgWorkerGetVideo = new System.ComponentModel.BackgroundWorker();
-            this.lblTotalLinks = new System.Windows.Forms.Label();
-            this.chkAudioOnly = new System.Windows.Forms.CheckBox();
-            this.toolStripStatusLabelStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.cmbAudioQuality)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbQuality)).BeginInit();
@@ -89,6 +89,7 @@
             // 
             this.groupBox1.Controls.Add(this.chkAudioOnly);
             this.groupBox1.Controls.Add(this.lblTotalLinks);
+            this.groupBox1.Controls.Add(this.lblStatusContagem);
             this.groupBox1.Controls.Add(this.btnBrowse);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.lblProgress);
@@ -107,6 +108,29 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Video Details:";
+            // 
+            // chkAudioOnly
+            // 
+            this.chkAudioOnly.AutoSize = true;
+            this.chkAudioOnly.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkAudioOnly.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(8)))), ((int)(((byte)(142)))), ((int)(((byte)(254)))));
+            this.chkAudioOnly.Location = new System.Drawing.Point(462, 224);
+            this.chkAudioOnly.Name = "chkAudioOnly";
+            this.chkAudioOnly.Size = new System.Drawing.Size(87, 17);
+            this.chkAudioOnly.TabIndex = 48;
+            this.chkAudioOnly.Text = "Audio Only";
+            this.chkAudioOnly.UseVisualStyleBackColor = true;
+            // 
+            // lblTotalLinks
+            // 
+            this.lblTotalLinks.AutoSize = true;
+            this.lblTotalLinks.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.lblTotalLinks.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(42)))), ((int)(((byte)(83)))));
+            this.lblTotalLinks.Location = new System.Drawing.Point(8, 162);
+            this.lblTotalLinks.Name = "lblTotalLinks";
+            this.lblTotalLinks.Size = new System.Drawing.Size(83, 17);
+            this.lblTotalLinks.TabIndex = 47;
+            this.lblTotalLinks.Text = "TotalVideos";
             // 
             // btnBrowse
             // 
@@ -403,7 +427,7 @@
             this.lblStatusContagem.AutoSize = true;
             this.lblStatusContagem.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.lblStatusContagem.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(8)))), ((int)(((byte)(142)))), ((int)(((byte)(254)))));
-            this.lblStatusContagem.Location = new System.Drawing.Point(9, 412);
+            this.lblStatusContagem.Location = new System.Drawing.Point(258, 140);
             this.lblStatusContagem.Name = "lblStatusContagem";
             this.lblStatusContagem.Size = new System.Drawing.Size(28, 17);
             this.lblStatusContagem.TabIndex = 45;
@@ -438,6 +462,13 @@
             this.Dataprogress.Name = "Dataprogress";
             this.Dataprogress.Size = new System.Drawing.Size(0, 17);
             // 
+            // toolStripStatusLabelStatus
+            // 
+            this.toolStripStatusLabelStatus.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(42)))), ((int)(((byte)(83)))));
+            this.toolStripStatusLabelStatus.Name = "toolStripStatusLabelStatus";
+            this.toolStripStatusLabelStatus.Size = new System.Drawing.Size(12, 17);
+            this.toolStripStatusLabelStatus.Text = "-";
+            // 
             // btnFechar
             // 
             this.btnFechar.Image = global::Converter.Properties.Resources.close_inactive_24;
@@ -457,36 +488,6 @@
             // 
             this.bgWorkerGetVideo.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bgWorkerGetVideo_DoWork);
             // 
-            // lblTotalLinks
-            // 
-            this.lblTotalLinks.AutoSize = true;
-            this.lblTotalLinks.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.lblTotalLinks.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(42)))), ((int)(((byte)(83)))));
-            this.lblTotalLinks.Location = new System.Drawing.Point(8, 162);
-            this.lblTotalLinks.Name = "lblTotalLinks";
-            this.lblTotalLinks.Size = new System.Drawing.Size(83, 17);
-            this.lblTotalLinks.TabIndex = 47;
-            this.lblTotalLinks.Text = "TotalVideos";
-            // 
-            // chkAudioOnly
-            // 
-            this.chkAudioOnly.AutoSize = true;
-            this.chkAudioOnly.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkAudioOnly.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(8)))), ((int)(((byte)(142)))), ((int)(((byte)(254)))));
-            this.chkAudioOnly.Location = new System.Drawing.Point(462, 224);
-            this.chkAudioOnly.Name = "chkAudioOnly";
-            this.chkAudioOnly.Size = new System.Drawing.Size(87, 17);
-            this.chkAudioOnly.TabIndex = 48;
-            this.chkAudioOnly.Text = "Audio Only";
-            this.chkAudioOnly.UseVisualStyleBackColor = true;
-            // 
-            // toolStripStatusLabelStatus
-            // 
-            this.toolStripStatusLabelStatus.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(42)))), ((int)(((byte)(83)))));
-            this.toolStripStatusLabelStatus.Name = "toolStripStatusLabelStatus";
-            this.toolStripStatusLabelStatus.Size = new System.Drawing.Size(12, 17);
-            this.toolStripStatusLabelStatus.Text = "-";
-            // 
             // FrmDowload
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -495,7 +496,6 @@
             this.ClientSize = new System.Drawing.Size(558, 460);
             this.Controls.Add(this.btnFechar);
             this.Controls.Add(this.statusStrip1);
-            this.Controls.Add(this.lblStatusContagem);
             this.Controls.Add(this.btnAdicionarURL);
             this.Controls.Add(this.btnContinuar);
             this.Controls.Add(this.label1);
