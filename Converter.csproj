@@ -12,7 +12,8 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
-    <PublishUrl>publish\</PublishUrl>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>D:\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -24,12 +25,11 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -39,7 +39,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -48,7 +48,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Resources\LogoConverterIco.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\ConvertPro.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Converter.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AngleSharp, Version=1.2.0.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
@@ -165,11 +168,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FrmDowload.cs">
+    <Compile Include="FrmCompressMpTreis .cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FrmDowload.Designer.cs">
-      <DependentUpon>FrmDowload.cs</DependentUpon>
+    <Compile Include="FrmCompressMpTreis .Designer.cs">
+      <DependentUpon>FrmCompressMpTreis .cs</DependentUpon>
     </Compile>
     <Compile Include="FrmConvertPro.cs">
       <SubType>Form</SubType>
@@ -177,11 +180,17 @@
     <Compile Include="FrmConvertPro.Designer.cs">
       <DependentUpon>FrmConvertPro.cs</DependentUpon>
     </Compile>
-    <Compile Include="FrmConverter.cs">
+    <Compile Include="FrmDowload.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FrmConverter.Designer.cs">
-      <DependentUpon>FrmConverter.cs</DependentUpon>
+    <Compile Include="FrmDowload.Designer.cs">
+      <DependentUpon>FrmDowload.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmConverterMpQuatro.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmConverterMpQuatro.Designer.cs">
+      <DependentUpon>FrmConverterMpQuatro.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -194,14 +203,17 @@
     <Compile Include="WRComboBox.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <EmbeddedResource Include="FrmDowload.resx">
-      <DependentUpon>FrmDowload.cs</DependentUpon>
+    <EmbeddedResource Include="FrmCompressMpTreis .resx">
+      <DependentUpon>FrmCompressMpTreis .cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrmConvertPro.resx">
       <DependentUpon>FrmConvertPro.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FrmConverter.resx">
-      <DependentUpon>FrmConverter.cs</DependentUpon>
+    <EmbeddedResource Include="FrmDowload.resx">
+      <DependentUpon>FrmDowload.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmConverterMpQuatro.resx">
+      <DependentUpon>FrmConverterMpQuatro.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -248,9 +260,6 @@
     <None Include="Resources\LogoConvertPro2  WR.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Converter %282%29.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\LogoQuadradoTreis.png" />
   </ItemGroup>
   <ItemGroup>
@@ -294,6 +303,31 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\close_inactive_24.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="LogoQuadrado.ico" />
+    <None Include="Resources\LogoConvertProH.png" />
+    <None Include="Resources\LogoConvertProhHorizontal.png" />
+    <None Include="Resources\Downloads.png" />
+    <None Include="Resources\ConvertPro.ico" />
+    <None Include="Resources\Close.png" />
+    <None Include="Resources\Conversor.jpeg" />
+    <None Include="Resources\Downlo.jpeg" />
+    <None Include="Resources\Down.jpeg" />
+    <None Include="Resources\LogoConvertPro2  WR %281%29.png" />
+    <None Include="Resources\LogoConvertProWR.png" />
+    <None Include="Resources\download-diretoBranco.png" />
+    <None Include="Resources\MpConverter-.png" />
+    <None Include="Resources\Menu.png" />
+    <None Include="Resources\Cerrar.png" />
+    <None Include="Resources\Minimizar.png" />
+    <None Include="Resources\Maximizar.png" />
+    <None Include="Resources\Restaurar.png" />
+    <None Include="Resources\Download_16dp.png" />
+    <None Include="Resources\MpConverter.png" />
+    <None Include="Resources\mp4.png" />
+    <None Include="Resources\Down.png" />
+    <None Include="Resources\Clear.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

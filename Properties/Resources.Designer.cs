@@ -83,9 +83,29 @@ namespace Converter.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap close_inactive_24 {
+        internal static System.Drawing.Bitmap Cerrar {
             get {
-                object obj = ResourceManager.GetObject("close_inactive_24", resourceCulture);
+                object obj = ResourceManager.GetObject("Cerrar", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Clear {
+            get {
+                object obj = ResourceManager.GetObject("Clear", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Close {
+            get {
+                object obj = ResourceManager.GetObject("Close", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -113,6 +133,16 @@ namespace Converter.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Conversor {
+            get {
+                object obj = ResourceManager.GetObject("Conversor", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Convert {
             get {
                 object obj = ResourceManager.GetObject("Convert", resourceCulture);
@@ -121,11 +151,71 @@ namespace Converter.Properties {
         }
         
         /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Icon semelhante a (Ícone).
+        /// </summary>
+        internal static System.Drawing.Icon ConvertPro {
+            get {
+                object obj = ResourceManager.GetObject("ConvertPro", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap Converter__2_ {
+        internal static System.Drawing.Bitmap Down {
             get {
-                object obj = ResourceManager.GetObject("Converter__2_", resourceCulture);
+                object obj = ResourceManager.GetObject("Down", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Down1 {
+            get {
+                object obj = ResourceManager.GetObject("Down1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Downlo {
+            get {
+                object obj = ResourceManager.GetObject("Downlo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Download_16dp {
+            get {
+                object obj = ResourceManager.GetObject("Download_16dp", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap download_diretoBranco {
+            get {
+                object obj = ResourceManager.GetObject("download_diretoBranco", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Downloads {
+            get {
+                object obj = ResourceManager.GetObject("Downloads", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -151,21 +241,41 @@ namespace Converter.Properties {
         }
         
         /// <summary>
-        ///   Consulta um recurso localizado do tipo System.Drawing.Icon semelhante a (Ícone).
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Icon LogoConverterIco {
+        internal static System.Drawing.Bitmap LogoConvertPro2__WR {
             get {
-                object obj = ResourceManager.GetObject("LogoConverterIco", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
+                object obj = ResourceManager.GetObject("LogoConvertPro2__WR", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap LogoConvertPro2__WR {
+        internal static System.Drawing.Bitmap LogoConvertPro2__WR__1_ {
             get {
-                object obj = ResourceManager.GetObject("LogoConvertPro2__WR", resourceCulture);
+                object obj = ResourceManager.GetObject("LogoConvertPro2__WR__1_", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap LogoConvertProH {
+            get {
+                object obj = ResourceManager.GetObject("LogoConvertProH", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap LogoConvertProWR {
+            get {
+                object obj = ResourceManager.GetObject("LogoConvertProWR", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -193,9 +303,39 @@ namespace Converter.Properties {
         /// <summary>
         ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap LogoQuadradoTreis1 {
+        internal static System.Drawing.Bitmap Maximizar {
             get {
-                object obj = ResourceManager.GetObject("LogoQuadradoTreis1", resourceCulture);
+                object obj = ResourceManager.GetObject("Maximizar", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Minimizar {
+            get {
+                object obj = ResourceManager.GetObject("Minimizar", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap MpConverter {
+            get {
+                object obj = ResourceManager.GetObject("MpConverter", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap MpConverter_ {
+            get {
+                object obj = ResourceManager.GetObject("MpConverter_", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -226,6 +366,16 @@ namespace Converter.Properties {
         internal static System.Drawing.Bitmap replay_24dp_0893FC_FILL0_wght400_GRAD0_opsz24 {
             get {
                 object obj = ResourceManager.GetObject("replay_24dp_0893FC_FILL0_wght400_GRAD0_opsz24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Consulta um recurso localizado do tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Restaurar {
+            get {
+                object obj = ResourceManager.GetObject("Restaurar", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
