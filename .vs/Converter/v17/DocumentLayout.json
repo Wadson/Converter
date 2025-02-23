@@ -3,11 +3,11 @@
   "WorkspaceRootPath": "D:\\Converter\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{2EE41BB3-0BDA-4A63-A8C9-08F83C77782B}|Converter.csproj|d:\\converter\\frmdowload.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2EE41BB3-0BDA-4A63-A8C9-08F83C77782B}|Converter.csproj|solutionrelative:frmdowload.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{2EE41BB3-0BDA-4A63-A8C9-08F83C77782B}|Converter.csproj|d:\\converter\\frmconvertpro.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{2EE41BB3-0BDA-4A63-A8C9-08F83C77782B}|Converter.csproj|solutionrelative:frmconvertpro.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2EE41BB3-0BDA-4A63-A8C9-08F83C77782B}|Converter.csproj|d:\\converter\\frmdowload.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{2EE41BB3-0BDA-4A63-A8C9-08F83C77782B}|Converter.csproj|D:\\Converter\\frmdowload.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{2EE41BB3-0BDA-4A63-A8C9-08F83C77782B}|Converter.csproj|solutionrelative:frmdowload.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     }
   ],
@@ -47,15 +47,14 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "FrmDowload.cs",
-              "DocumentMoniker": "D:\\Converter\\FrmDowload.cs",
-              "RelativeDocumentMoniker": "FrmDowload.cs",
-              "ToolTip": "D:\\Converter\\FrmDowload.cs",
-              "RelativeToolTip": "FrmDowload.cs",
-              "ViewState": "AgIAAPEEAAAAAAAAAAAcwAQFAAAbAAAAAAAAAA==",
+              "Title": "FrmConvertPro.cs [Design]",
+              "DocumentMoniker": "D:\\Converter\\FrmConvertPro.cs",
+              "RelativeDocumentMoniker": "FrmConvertPro.cs",
+              "ToolTip": "D:\\Converter\\FrmConvertPro.cs [Design]",
+              "RelativeToolTip": "FrmConvertPro.cs [Design]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-19T22:43:16.842Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-02-20T01:56:10.684Z",
+              "EditorCaption": " [Design]"
             },
             {
               "$type": "Document",

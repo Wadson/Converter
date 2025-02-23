@@ -116,7 +116,7 @@
             this.btnConverterMpTreis.Name = "btnConverterMpTreis";
             this.btnConverterMpTreis.Size = new System.Drawing.Size(162, 40);
             this.btnConverterMpTreis.TabIndex = 17;
-            this.btnConverterMpTreis.Text = "Compres";
+            this.btnConverterMpTreis.Text = "Compress";
             this.btnConverterMpTreis.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.btnConverterMpTreis.UseVisualStyleBackColor = true;
             this.btnConverterMpTreis.Click += new System.EventHandler(this.btnConverterMpTreis_Click);
