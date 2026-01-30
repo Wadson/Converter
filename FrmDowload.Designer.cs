@@ -28,614 +28,580 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.kryptonPalette1 = new ComponentFactory.Krypton.Toolkit.KryptonPalette(this.components);
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.ListBoxURL = new Krypton.Toolkit.KryptonListBox();
-            this.chkAudioOnly = new System.Windows.Forms.CheckBox();
-            this.lblStatusContagem = new System.Windows.Forms.Label();
-            this.btnBrowse = new System.Windows.Forms.Button();
-            this.label5 = new System.Windows.Forms.Label();
-            this.lblProgress = new System.Windows.Forms.Label();
-            this.txtFilePath = new MetroFramework.Controls.MetroTextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.cmbAudioQuality = new Krypton.Toolkit.KryptonComboBox();
-            this.cmbQuality = new Krypton.Toolkit.KryptonComboBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.txtTitle = new MetroFramework.Controls.MetroTextBox();
-            this.progressBar = new System.Windows.Forms.ProgressBar();
-            this.btnDownload = new System.Windows.Forms.Button();
-            this.btnCancelar = new System.Windows.Forms.Button();
-            this.btnPausar = new System.Windows.Forms.Button();
-            this.txtUrl = new MetroFramework.Controls.MetroTextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.btnContinuar = new System.Windows.Forms.Button();
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.btnAdicionarURL = new System.Windows.Forms.Button();
-            this.btnFechar = new System.Windows.Forms.PictureBox();
-            this.btnLimparLista = new System.Windows.Forms.Button();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.Status = new System.Windows.Forms.ToolStripStatusLabel();
-            this.Dataprogress = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripStatusLabelStatus = new System.Windows.Forms.ToolStripStatusLabel();
-            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.Downloader_BackProcess = new System.ComponentModel.BackgroundWorker();
-            this.bgWorkerGetVideo = new System.ComponentModel.BackgroundWorker();
-            this.kryptonPanel1 = new Krypton.Toolkit.KryptonPanel();
-            this.lblJanelaAberta = new System.Windows.Forms.Label();
-            this.lblAnalisando = new System.Windows.Forms.Label();
-            this.lblTotalLinks = new System.Windows.Forms.Label();
-            this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.cmbAudioQuality)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.cmbQuality)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.btnFechar)).BeginInit();
-            this.statusStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.kryptonPanel1)).BeginInit();
-            this.SuspendLayout();
+            components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmDowload));
+            cmbVideoQuality = new ComboBox();
+            cmbAudioQuality = new ComboBox();
+            ListBoxURL = new ListBox();
+            txtTitle = new TextBox();
+            txtFilePath = new TextBox();
+            lblAnalisando = new Label();
+            chkAudioOnly = new CheckBox();
+            lblStatusContagem = new Label();
+            label5 = new Label();
+            lblProgress = new Label();
+            label4 = new Label();
+            label3 = new Label();
+            label2 = new Label();
+            progressBar = new ProgressBar();
+            label1 = new Label();
+            toolTip1 = new ToolTip(components);
+            btnAdicionarURL = new FontAwesome.Sharp.IconButton();
+            btnBrowse = new FontAwesome.Sharp.IconButton();
+            btnLimparLista = new FontAwesome.Sharp.IconButton();
+            btnExcluirSelecionados = new FontAwesome.Sharp.IconButton();
+            btnPausar = new FontAwesome.Sharp.IconButton();
+            btnContinuar = new FontAwesome.Sharp.IconButton();
+            btnCancelar = new FontAwesome.Sharp.IconButton();
+            btnDownload = new FontAwesome.Sharp.IconButton();
+            btnFechar = new FontAwesome.Sharp.IconButton();
+            statusStrip1 = new StatusStrip();
+            toolStripStatusLabel1 = new ToolStripStatusLabel();
+            Status = new ToolStripStatusLabel();
+            Dataprogress = new ToolStripStatusLabel();
+            toolStripStatusLabelStatus = new ToolStripStatusLabel();
+            folderBrowserDialog1 = new FolderBrowserDialog();
+            Downloader_BackProcess = new System.ComponentModel.BackgroundWorker();
+            bgWorkerGetVideo = new System.ComponentModel.BackgroundWorker();
+            txtUrl = new TextBox();
+            pictureBox1 = new PictureBox();
+            lblTotalLinks = new Label();
+            groupBox1 = new GroupBox();
+            groupBox2 = new GroupBox();
+            groupBox3 = new GroupBox();
+            panel1 = new Panel();
+            kryptonLabel1 = new Krypton.Toolkit.KryptonLabel();
+            statusStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            groupBox1.SuspendLayout();
+            groupBox2.SuspendLayout();
+            groupBox3.SuspendLayout();
+            panel1.SuspendLayout();
+            SuspendLayout();
             // 
-            // kryptonPalette1
+            // cmbVideoQuality
             // 
-            this.kryptonPalette1.FormStyles.FormMain.StateCommon.Back.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(252)))), ((int)(((byte)(252)))));
-            this.kryptonPalette1.FormStyles.FormMain.StateCommon.Back.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(252)))), ((int)(((byte)(252)))));
-            this.kryptonPalette1.FormStyles.FormMain.StateCommon.Border.DrawBorders = ((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders)((((ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Top | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Bottom) 
-            | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Left) 
-            | ComponentFactory.Krypton.Toolkit.PaletteDrawBorders.Right)));
-            this.kryptonPalette1.FormStyles.FormMain.StateCommon.Border.GraphicsHint = ComponentFactory.Krypton.Toolkit.PaletteGraphicsHint.None;
-            this.kryptonPalette1.FormStyles.FormMain.StateCommon.Border.Rounding = 12;
-            this.kryptonPalette1.HeaderStyles.HeaderForm.StateCommon.Back.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(252)))), ((int)(((byte)(252)))));
-            this.kryptonPalette1.HeaderStyles.HeaderForm.StateCommon.Back.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(252)))), ((int)(((byte)(252)))));
-            this.kryptonPalette1.HeaderStyles.HeaderForm.StateCommon.ButtonEdgeInset = 10;
-            this.kryptonPalette1.HeaderStyles.HeaderForm.StateCommon.Content.Padding = new System.Windows.Forms.Padding(10, -1, -1, -1);
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.lblTotalLinks);
-            this.groupBox1.Controls.Add(this.lblAnalisando);
-            this.groupBox1.Controls.Add(this.ListBoxURL);
-            this.groupBox1.Controls.Add(this.chkAudioOnly);
-            this.groupBox1.Controls.Add(this.lblStatusContagem);
-            this.groupBox1.Controls.Add(this.btnBrowse);
-            this.groupBox1.Controls.Add(this.label5);
-            this.groupBox1.Controls.Add(this.lblProgress);
-            this.groupBox1.Controls.Add(this.txtFilePath);
-            this.groupBox1.Controls.Add(this.label4);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.cmbAudioQuality);
-            this.groupBox1.Controls.Add(this.cmbQuality);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.txtTitle);
-            this.groupBox1.Controls.Add(this.progressBar);
-            this.groupBox1.Location = new System.Drawing.Point(10, 72);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(524, 280);
-            this.groupBox1.TabIndex = 0;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Video Details:";
-            // 
-            // ListBoxURL
-            // 
-            this.ListBoxURL.AllowDrop = true;
-            this.ListBoxURL.Location = new System.Drawing.Point(7, 14);
-            this.ListBoxURL.Name = "ListBoxURL";
-            this.ListBoxURL.Size = new System.Drawing.Size(511, 123);
-            this.ListBoxURL.TabIndex = 49;
-            // 
-            // chkAudioOnly
-            // 
-            this.chkAudioOnly.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.chkAudioOnly.AutoSize = true;
-            this.chkAudioOnly.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkAudioOnly.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(8)))), ((int)(((byte)(142)))), ((int)(((byte)(254)))));
-            this.chkAudioOnly.Location = new System.Drawing.Point(426, 226);
-            this.chkAudioOnly.Name = "chkAudioOnly";
-            this.chkAudioOnly.Size = new System.Drawing.Size(87, 17);
-            this.chkAudioOnly.TabIndex = 48;
-            this.chkAudioOnly.Text = "Audio Only";
-            this.chkAudioOnly.UseVisualStyleBackColor = true;
-            // 
-            // lblStatusContagem
-            // 
-            this.lblStatusContagem.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.lblStatusContagem.AutoSize = true;
-            this.lblStatusContagem.BackColor = System.Drawing.Color.Transparent;
-            this.lblStatusContagem.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.lblStatusContagem.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(8)))), ((int)(((byte)(142)))), ((int)(((byte)(254)))));
-            this.lblStatusContagem.Location = new System.Drawing.Point(10, 172);
-            this.lblStatusContagem.Name = "lblStatusContagem";
-            this.lblStatusContagem.Size = new System.Drawing.Size(28, 17);
-            this.lblStatusContagem.TabIndex = 45;
-            this.lblStatusContagem.Text = "0/0";
-            // 
-            // btnBrowse
-            // 
-            this.btnBrowse.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.btnBrowse.BackgroundImage = global::Converter.Properties.Resources.Folders;
-            this.btnBrowse.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnBrowse.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(8)))), ((int)(((byte)(142)))), ((int)(((byte)(252)))));
-            this.btnBrowse.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(183)))), ((int)(((byte)(217)))), ((int)(((byte)(226)))));
-            this.btnBrowse.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(199)))), ((int)(((byte)(137)))));
-            this.btnBrowse.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnBrowse.Location = new System.Drawing.Point(471, 244);
-            this.btnBrowse.Name = "btnBrowse";
-            this.btnBrowse.Size = new System.Drawing.Size(42, 29);
-            this.btnBrowse.TabIndex = 42;
-            this.toolTip1.SetToolTip(this.btnBrowse, "Localizar local de salvamento");
-            this.btnBrowse.UseVisualStyleBackColor = true;
-            this.btnBrowse.Click += new System.EventHandler(this.btnBrowse_Click);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(8)))), ((int)(((byte)(142)))), ((int)(((byte)(254)))));
-            this.label5.Location = new System.Drawing.Point(6, 255);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(32, 13);
-            this.label5.TabIndex = 41;
-            this.label5.Text = "Title";
-            // 
-            // lblProgress
-            // 
-            this.lblProgress.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.lblProgress.AutoSize = true;
-            this.lblProgress.BackColor = System.Drawing.Color.Transparent;
-            this.lblProgress.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.lblProgress.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(8)))), ((int)(((byte)(142)))), ((int)(((byte)(254)))));
-            this.lblProgress.Location = new System.Drawing.Point(448, 145);
-            this.lblProgress.Name = "lblProgress";
-            this.lblProgress.Size = new System.Drawing.Size(45, 20);
-            this.lblProgress.TabIndex = 44;
-            this.lblProgress.Text = "0,0%";
-            // 
-            // txtFilePath
-            // 
-            this.txtFilePath.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            // 
-            // 
-            // 
-            this.txtFilePath.CustomButton.Image = null;
-            this.txtFilePath.CustomButton.Location = new System.Drawing.Point(399, 1);
-            this.txtFilePath.CustomButton.Name = "";
-            this.txtFilePath.CustomButton.Size = new System.Drawing.Size(21, 21);
-            this.txtFilePath.CustomButton.Style = MetroFramework.MetroColorStyle.Blue;
-            this.txtFilePath.CustomButton.TabIndex = 1;
-            this.txtFilePath.CustomButton.Theme = MetroFramework.MetroThemeStyle.Light;
-            this.txtFilePath.CustomButton.UseSelectable = true;
-            this.txtFilePath.CustomButton.Visible = false;
-            this.txtFilePath.Lines = new string[0];
-            this.txtFilePath.Location = new System.Drawing.Point(44, 250);
-            this.txtFilePath.MaxLength = 32767;
-            this.txtFilePath.Name = "txtFilePath";
-            this.txtFilePath.PasswordChar = '\0';
-            this.txtFilePath.ScrollBars = System.Windows.Forms.ScrollBars.None;
-            this.txtFilePath.SelectedText = "";
-            this.txtFilePath.SelectionLength = 0;
-            this.txtFilePath.SelectionStart = 0;
-            this.txtFilePath.ShortcutsEnabled = true;
-            this.txtFilePath.Size = new System.Drawing.Size(421, 23);
-            this.txtFilePath.TabIndex = 40;
-            this.txtFilePath.UseSelectable = true;
-            this.txtFilePath.WaterMarkColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
-            this.txtFilePath.WaterMarkFont = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Pixel);
-            // 
-            // label4
-            // 
-            this.label4.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(8)))), ((int)(((byte)(142)))), ((int)(((byte)(254)))));
-            this.label4.Location = new System.Drawing.Point(214, 228);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(82, 13);
-            this.label4.TabIndex = 39;
-            this.label4.Text = "Audio Quality";
-            // 
-            // label3
-            // 
-            this.label3.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(8)))), ((int)(((byte)(142)))), ((int)(((byte)(254)))));
-            this.label3.Location = new System.Drawing.Point(6, 226);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(82, 13);
-            this.label3.TabIndex = 38;
-            this.label3.Text = "Video Quality";
+            cmbVideoQuality.FormattingEnabled = true;
+            cmbVideoQuality.Location = new Point(164, 84);
+            cmbVideoQuality.Margin = new Padding(4, 3, 4, 3);
+            cmbVideoQuality.Name = "cmbVideoQuality";
+            cmbVideoQuality.Size = new Size(107, 23);
+            cmbVideoQuality.TabIndex = 59;
+            cmbVideoQuality.SelectedIndexChanged += cmbVideoQuality_SelectedIndexChanged;
             // 
             // cmbAudioQuality
             // 
-            this.cmbAudioQuality.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.cmbAudioQuality.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbAudioQuality.DropDownWidth = 121;
-            this.cmbAudioQuality.IntegralHeight = false;
-            this.cmbAudioQuality.Location = new System.Drawing.Point(299, 224);
-            this.cmbAudioQuality.Name = "cmbAudioQuality";
-            this.cmbAudioQuality.Size = new System.Drawing.Size(121, 22);
-            this.cmbAudioQuality.StateCommon.ComboBox.Content.TextH = Krypton.Toolkit.PaletteRelativeAlign.Near;
-            this.cmbAudioQuality.TabIndex = 37;
-            this.cmbAudioQuality.SelectedIndexChanged += new System.EventHandler(this.cmbAudioQuality_SelectedIndexChanged);
+            cmbAudioQuality.FormattingEnabled = true;
+            cmbAudioQuality.Location = new Point(387, 84);
+            cmbAudioQuality.Margin = new Padding(4, 3, 4, 3);
+            cmbAudioQuality.Name = "cmbAudioQuality";
+            cmbAudioQuality.Size = new Size(109, 23);
+            cmbAudioQuality.TabIndex = 58;
+            cmbAudioQuality.SelectedIndexChanged += cmbAudioQuality_SelectedIndexChanged;
             // 
-            // cmbQuality
+            // ListBoxURL
             // 
-            this.cmbQuality.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.cmbQuality.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbQuality.DropDownWidth = 121;
-            this.cmbQuality.IntegralHeight = false;
-            this.cmbQuality.Location = new System.Drawing.Point(88, 222);
-            this.cmbQuality.Name = "cmbQuality";
-            this.cmbQuality.Size = new System.Drawing.Size(121, 22);
-            this.cmbQuality.StateCommon.ComboBox.Content.TextH = Krypton.Toolkit.PaletteRelativeAlign.Near;
-            this.cmbQuality.TabIndex = 36;
-            this.cmbQuality.SelectedIndexChanged += new System.EventHandler(this.cmbQuality_SelectedIndexChanged);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(8)))), ((int)(((byte)(142)))), ((int)(((byte)(254)))));
-            this.label2.Location = new System.Drawing.Point(6, 198);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(32, 13);
-            this.label2.TabIndex = 35;
-            this.label2.Text = "Title";
+            ListBoxURL.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            ListBoxURL.FormattingEnabled = true;
+            ListBoxURL.Location = new Point(7, 21);
+            ListBoxURL.Margin = new Padding(4, 3, 4, 3);
+            ListBoxURL.Name = "ListBoxURL";
+            ListBoxURL.Size = new Size(654, 109);
+            ListBoxURL.TabIndex = 57;
             // 
             // txtTitle
             // 
-            this.txtTitle.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            txtTitle.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtTitle.BackColor = Color.Aquamarine;
+            txtTitle.BorderStyle = BorderStyle.FixedSingle;
+            txtTitle.Location = new Point(70, 53);
+            txtTitle.Margin = new Padding(4, 3, 4, 3);
+            txtTitle.Name = "txtTitle";
+            txtTitle.Size = new Size(538, 23);
+            txtTitle.TabIndex = 56;
             // 
+            // txtFilePath
             // 
-            // 
-            this.txtTitle.CustomButton.Image = null;
-            this.txtTitle.CustomButton.Location = new System.Drawing.Point(427, 1);
-            this.txtTitle.CustomButton.Name = "";
-            this.txtTitle.CustomButton.Size = new System.Drawing.Size(21, 21);
-            this.txtTitle.CustomButton.Style = MetroFramework.MetroColorStyle.Blue;
-            this.txtTitle.CustomButton.TabIndex = 1;
-            this.txtTitle.CustomButton.Theme = MetroFramework.MetroThemeStyle.Light;
-            this.txtTitle.CustomButton.UseSelectable = true;
-            this.txtTitle.CustomButton.Visible = false;
-            this.txtTitle.Lines = new string[0];
-            this.txtTitle.Location = new System.Drawing.Point(49, 194);
-            this.txtTitle.MaxLength = 32767;
-            this.txtTitle.Name = "txtTitle";
-            this.txtTitle.PasswordChar = '\0';
-            this.txtTitle.ScrollBars = System.Windows.Forms.ScrollBars.None;
-            this.txtTitle.SelectedText = "";
-            this.txtTitle.SelectionLength = 0;
-            this.txtTitle.SelectionStart = 0;
-            this.txtTitle.ShortcutsEnabled = true;
-            this.txtTitle.Size = new System.Drawing.Size(449, 23);
-            this.txtTitle.TabIndex = 4;
-            this.txtTitle.UseSelectable = true;
-            this.txtTitle.WaterMarkColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
-            this.txtTitle.WaterMarkFont = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Pixel);
-            // 
-            // progressBar
-            // 
-            this.progressBar.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.progressBar.BackColor = System.Drawing.Color.White;
-            this.progressBar.Location = new System.Drawing.Point(6, 143);
-            this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(437, 25);
-            this.progressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.progressBar.TabIndex = 46;
-            // 
-            // btnDownload
-            // 
-            this.btnDownload.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.btnDownload.BackgroundImage = global::Converter.Properties.Resources.Down;
-            this.btnDownload.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnDownload.FlatAppearance.BorderSize = 0;
-            this.btnDownload.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(183)))), ((int)(((byte)(217)))), ((int)(((byte)(226)))));
-            this.btnDownload.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(199)))), ((int)(((byte)(137)))));
-            this.btnDownload.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnDownload.Location = new System.Drawing.Point(364, 349);
-            this.btnDownload.Name = "btnDownload";
-            this.btnDownload.Size = new System.Drawing.Size(63, 52);
-            this.btnDownload.TabIndex = 34;
-            this.toolTip1.SetToolTip(this.btnDownload, "Iniciar Download");
-            this.btnDownload.UseVisualStyleBackColor = true;
-            this.btnDownload.Click += new System.EventHandler(this.btnDownload_Click);
-            // 
-            // btnCancelar
-            // 
-            this.btnCancelar.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.btnCancelar.BackgroundImage = global::Converter.Properties.Resources.Stop;
-            this.btnCancelar.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnCancelar.FlatAppearance.BorderSize = 0;
-            this.btnCancelar.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(183)))), ((int)(((byte)(217)))), ((int)(((byte)(226)))));
-            this.btnCancelar.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(199)))), ((int)(((byte)(137)))));
-            this.btnCancelar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnCancelar.Location = new System.Drawing.Point(291, 349);
-            this.btnCancelar.Name = "btnCancelar";
-            this.btnCancelar.Size = new System.Drawing.Size(63, 52);
-            this.btnCancelar.TabIndex = 33;
-            this.toolTip1.SetToolTip(this.btnCancelar, "Parar Download");
-            this.btnCancelar.UseVisualStyleBackColor = true;
-            this.btnCancelar.Click += new System.EventHandler(this.btnCancelar_Click);
-            // 
-            // btnPausar
-            // 
-            this.btnPausar.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.btnPausar.BackgroundImage = global::Converter.Properties.Resources.Pause;
-            this.btnPausar.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnPausar.FlatAppearance.BorderSize = 0;
-            this.btnPausar.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(183)))), ((int)(((byte)(217)))), ((int)(((byte)(226)))));
-            this.btnPausar.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(199)))), ((int)(((byte)(137)))));
-            this.btnPausar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnPausar.Location = new System.Drawing.Point(143, 349);
-            this.btnPausar.Name = "btnPausar";
-            this.btnPausar.Size = new System.Drawing.Size(63, 52);
-            this.btnPausar.TabIndex = 32;
-            this.toolTip1.SetToolTip(this.btnPausar, "Pausar Download");
-            this.btnPausar.UseVisualStyleBackColor = true;
-            this.btnPausar.Click += new System.EventHandler(this.btnPausar_Click);
-            // 
-            // txtUrl
-            // 
-            this.txtUrl.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            // 
-            // 
-            // 
-            this.txtUrl.CustomButton.Image = null;
-            this.txtUrl.CustomButton.Location = new System.Drawing.Point(349, 1);
-            this.txtUrl.CustomButton.Name = "";
-            this.txtUrl.CustomButton.Size = new System.Drawing.Size(21, 21);
-            this.txtUrl.CustomButton.Style = MetroFramework.MetroColorStyle.Blue;
-            this.txtUrl.CustomButton.TabIndex = 1;
-            this.txtUrl.CustomButton.Theme = MetroFramework.MetroThemeStyle.Light;
-            this.txtUrl.CustomButton.UseSelectable = true;
-            this.txtUrl.CustomButton.Visible = false;
-            this.txtUrl.Lines = new string[0];
-            this.txtUrl.Location = new System.Drawing.Point(71, 46);
-            this.txtUrl.MaxLength = 32767;
-            this.txtUrl.Name = "txtUrl";
-            this.txtUrl.PasswordChar = '\0';
-            this.txtUrl.ScrollBars = System.Windows.Forms.ScrollBars.None;
-            this.txtUrl.SelectedText = "";
-            this.txtUrl.SelectionLength = 0;
-            this.txtUrl.SelectionStart = 0;
-            this.txtUrl.ShortcutsEnabled = true;
-            this.txtUrl.Size = new System.Drawing.Size(371, 23);
-            this.txtUrl.TabIndex = 1;
-            this.txtUrl.UseSelectable = true;
-            this.txtUrl.WaterMarkColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
-            this.txtUrl.WaterMarkFont = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Pixel);
-            this.txtUrl.TextChanged += new System.EventHandler(this.txtUrl_TextChanged);
-            this.txtUrl.Click += new System.EventHandler(this.txtUrl_Click);
-            this.txtUrl.Enter += new System.EventHandler(this.txtUrl_Enter);
-            this.txtUrl.Leave += new System.EventHandler(this.txtUrl_Leave);
-            // 
-            // label1
-            // 
-            this.label1.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(8)))), ((int)(((byte)(142)))), ((int)(((byte)(254)))));
-            this.label1.Location = new System.Drawing.Point(36, 51);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(32, 13);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "URL";
-            // 
-            // btnContinuar
-            // 
-            this.btnContinuar.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.btnContinuar.BackgroundImage = global::Converter.Properties.Resources.Continuar;
-            this.btnContinuar.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnContinuar.FlatAppearance.BorderSize = 0;
-            this.btnContinuar.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(183)))), ((int)(((byte)(217)))), ((int)(((byte)(226)))));
-            this.btnContinuar.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(199)))), ((int)(((byte)(137)))));
-            this.btnContinuar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnContinuar.Location = new System.Drawing.Point(212, 349);
-            this.btnContinuar.Name = "btnContinuar";
-            this.btnContinuar.Size = new System.Drawing.Size(63, 52);
-            this.btnContinuar.TabIndex = 35;
-            this.toolTip1.SetToolTip(this.btnContinuar, "Continuar Download");
-            this.btnContinuar.UseVisualStyleBackColor = true;
-            this.btnContinuar.Click += new System.EventHandler(this.btnContinuar_Click);
-            // 
-            // btnAdicionarURL
-            // 
-            this.btnAdicionarURL.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.btnAdicionarURL.BackgroundImage = global::Converter.Properties.Resources.add_link_24;
-            this.btnAdicionarURL.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnAdicionarURL.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(8)))), ((int)(((byte)(142)))), ((int)(((byte)(252)))));
-            this.btnAdicionarURL.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(183)))), ((int)(((byte)(217)))), ((int)(((byte)(226)))));
-            this.btnAdicionarURL.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(199)))), ((int)(((byte)(137)))));
-            this.btnAdicionarURL.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAdicionarURL.Location = new System.Drawing.Point(444, 43);
-            this.btnAdicionarURL.Name = "btnAdicionarURL";
-            this.btnAdicionarURL.Size = new System.Drawing.Size(42, 29);
-            this.btnAdicionarURL.TabIndex = 43;
-            this.toolTip1.SetToolTip(this.btnAdicionarURL, "Inserir Link na lista");
-            this.btnAdicionarURL.UseVisualStyleBackColor = true;
-            this.btnAdicionarURL.Click += new System.EventHandler(this.btnAdicionarURL_Click);
-            // 
-            // btnFechar
-            // 
-            this.btnFechar.Image = global::Converter.Properties.Resources.Close;
-            this.btnFechar.Location = new System.Drawing.Point(4, 3);
-            this.btnFechar.Name = "btnFechar";
-            this.btnFechar.Size = new System.Drawing.Size(35, 31);
-            this.btnFechar.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.btnFechar.TabIndex = 48;
-            this.btnFechar.TabStop = false;
-            this.toolTip1.SetToolTip(this.btnFechar, "Sair");
-            this.btnFechar.Click += new System.EventHandler(this.btnFechar_Click);
-            // 
-            // btnLimparLista
-            // 
-            this.btnLimparLista.BackgroundImage = global::Converter.Properties.Resources.Clear;
-            this.btnLimparLista.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.btnLimparLista.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(8)))), ((int)(((byte)(142)))), ((int)(((byte)(252)))));
-            this.btnLimparLista.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(183)))), ((int)(((byte)(217)))), ((int)(((byte)(226)))));
-            this.btnLimparLista.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(199)))), ((int)(((byte)(137)))));
-            this.btnLimparLista.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnLimparLista.Location = new System.Drawing.Point(491, 43);
-            this.btnLimparLista.Name = "btnLimparLista";
-            this.btnLimparLista.Size = new System.Drawing.Size(42, 29);
-            this.btnLimparLista.TabIndex = 54;
-            this.toolTip1.SetToolTip(this.btnLimparLista, "Limpar lista");
-            this.btnLimparLista.UseVisualStyleBackColor = true;
-            this.btnLimparLista.Click += new System.EventHandler(this.btnLimparLista_Click);
-            // 
-            // statusStrip1
-            // 
-            this.statusStrip1.BackColor = System.Drawing.SystemColors.Control;
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1,
-            this.Status,
-            this.Dataprogress,
-            this.toolStripStatusLabelStatus});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 403);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(554, 22);
-            this.statusStrip1.TabIndex = 47;
-            this.statusStrip1.Text = "statusStrip1";
-            // 
-            // toolStripStatusLabel1
-            // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
-            // 
-            // Status
-            // 
-            this.Status.Name = "Status";
-            this.Status.Size = new System.Drawing.Size(0, 17);
-            // 
-            // Dataprogress
-            // 
-            this.Dataprogress.Name = "Dataprogress";
-            this.Dataprogress.Size = new System.Drawing.Size(0, 17);
-            // 
-            // toolStripStatusLabelStatus
-            // 
-            this.toolStripStatusLabelStatus.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(42)))), ((int)(((byte)(83)))));
-            this.toolStripStatusLabelStatus.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(8)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
-            this.toolStripStatusLabelStatus.Name = "toolStripStatusLabelStatus";
-            this.toolStripStatusLabelStatus.Size = new System.Drawing.Size(12, 17);
-            this.toolStripStatusLabelStatus.Text = "-";
-            // 
-            // Downloader_BackProcess
-            // 
-            this.Downloader_BackProcess.DoWork += new System.ComponentModel.DoWorkEventHandler(this.Downloader_BackProcess_DoWork);
-            // 
-            // bgWorkerGetVideo
-            // 
-            this.bgWorkerGetVideo.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bgWorkerGetVideo_DoWork);
-            // 
-            // kryptonPanel1
-            // 
-            this.kryptonPanel1.Location = new System.Drawing.Point(0, 38);
-            this.kryptonPanel1.Name = "kryptonPanel1";
-            this.kryptonPanel1.PaletteMode = Krypton.Toolkit.PaletteMode.Office2007Blue;
-            this.kryptonPanel1.Size = new System.Drawing.Size(554, 1);
-            this.kryptonPanel1.StateCommon.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(142)))), ((int)(((byte)(255)))));
-            this.kryptonPanel1.StateCommon.Color2 = System.Drawing.Color.FromArgb(((int)(((byte)(8)))), ((int)(((byte)(128)))), ((int)(((byte)(244)))));
-            this.kryptonPanel1.TabIndex = 53;
-            // 
-            // lblJanelaAberta
-            // 
-            this.lblJanelaAberta.AutoSize = true;
-            this.lblJanelaAberta.BackColor = System.Drawing.Color.Transparent;
-            this.lblJanelaAberta.Font = new System.Drawing.Font("Segoe UI", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblJanelaAberta.ForeColor = System.Drawing.Color.Red;
-            this.lblJanelaAberta.Location = new System.Drawing.Point(127, 10);
-            this.lblJanelaAberta.Name = "lblJanelaAberta";
-            this.lblJanelaAberta.Size = new System.Drawing.Size(300, 25);
-            this.lblJanelaAberta.TabIndex = 0;
-            this.lblJanelaAberta.Text = "Download de Vídeo do YouTube";
+            txtFilePath.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtFilePath.BackColor = Color.Aquamarine;
+            txtFilePath.Location = new Point(71, 115);
+            txtFilePath.Margin = new Padding(4, 3, 4, 3);
+            txtFilePath.Name = "txtFilePath";
+            txtFilePath.Size = new Size(537, 23);
+            txtFilePath.TabIndex = 55;
             // 
             // lblAnalisando
             // 
-            this.lblAnalisando.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.lblAnalisando.AutoSize = true;
-            this.lblAnalisando.BackColor = System.Drawing.Color.Transparent;
-            this.lblAnalisando.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.lblAnalisando.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(8)))), ((int)(((byte)(142)))), ((int)(((byte)(254)))));
-            this.lblAnalisando.Location = new System.Drawing.Point(25, 64);
-            this.lblAnalisando.Name = "lblAnalisando";
-            this.lblAnalisando.Size = new System.Drawing.Size(100, 20);
-            this.lblAnalisando.TabIndex = 50;
-            this.lblAnalisando.Text = "Analisando...";
-            this.lblAnalisando.Visible = false;
+            lblAnalisando.Anchor = AnchorStyles.Top;
+            lblAnalisando.AutoSize = true;
+            lblAnalisando.BackColor = Color.Transparent;
+            lblAnalisando.Font = new Font("Microsoft Sans Serif", 12F);
+            lblAnalisando.ForeColor = Color.FromArgb(8, 142, 254);
+            lblAnalisando.Location = new Point(39, 49);
+            lblAnalisando.Margin = new Padding(4, 0, 4, 0);
+            lblAnalisando.Name = "lblAnalisando";
+            lblAnalisando.Size = new Size(100, 20);
+            lblAnalisando.TabIndex = 50;
+            lblAnalisando.Text = "Analisando...";
+            lblAnalisando.Visible = false;
+            // 
+            // chkAudioOnly
+            // 
+            chkAudioOnly.Anchor = AnchorStyles.Top;
+            chkAudioOnly.AutoSize = true;
+            chkAudioOnly.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            chkAudioOnly.ForeColor = Color.FromArgb(6, 130, 200);
+            chkAudioOnly.Location = new Point(519, 90);
+            chkAudioOnly.Margin = new Padding(4, 3, 4, 3);
+            chkAudioOnly.Name = "chkAudioOnly";
+            chkAudioOnly.Size = new Size(87, 17);
+            chkAudioOnly.TabIndex = 48;
+            chkAudioOnly.Text = "Audio Only";
+            chkAudioOnly.UseVisualStyleBackColor = true;
+            // 
+            // lblStatusContagem
+            // 
+            lblStatusContagem.Anchor = AnchorStyles.Top;
+            lblStatusContagem.AutoSize = true;
+            lblStatusContagem.BackColor = Color.Transparent;
+            lblStatusContagem.Font = new Font("Microsoft Sans Serif", 10F);
+            lblStatusContagem.ForeColor = Color.FromArgb(8, 142, 254);
+            lblStatusContagem.Location = new Point(45, 416);
+            lblStatusContagem.Margin = new Padding(4, 0, 4, 0);
+            lblStatusContagem.Name = "lblStatusContagem";
+            lblStatusContagem.Size = new Size(13, 17);
+            lblStatusContagem.TabIndex = 45;
+            lblStatusContagem.Text = "-";
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label5.ForeColor = Color.FromArgb(6, 130, 200);
+            label5.Location = new Point(9, 119);
+            label5.Margin = new Padding(4, 0, 4, 0);
+            label5.Name = "label5";
+            label5.Size = new Size(54, 13);
+            label5.TabIndex = 41;
+            label5.Text = "Destino:";
+            // 
+            // lblProgress
+            // 
+            lblProgress.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            lblProgress.AutoSize = true;
+            lblProgress.BackColor = Color.Transparent;
+            lblProgress.Font = new Font("Microsoft Sans Serif", 12F);
+            lblProgress.ForeColor = Color.FromArgb(6, 130, 200);
+            lblProgress.Location = new Point(593, 500);
+            lblProgress.Margin = new Padding(4, 0, 4, 0);
+            lblProgress.Name = "lblProgress";
+            lblProgress.Size = new Size(45, 20);
+            lblProgress.TabIndex = 44;
+            lblProgress.Text = "0,0%";
+            // 
+            // label4
+            // 
+            label4.Anchor = AnchorStyles.Top;
+            label4.AutoSize = true;
+            label4.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label4.ForeColor = Color.FromArgb(6, 130, 200);
+            label4.Location = new Point(294, 89);
+            label4.Margin = new Padding(4, 0, 4, 0);
+            label4.Name = "label4";
+            label4.Size = new Size(86, 13);
+            label4.TabIndex = 39;
+            label4.Text = "Audio Quality:";
+            // 
+            // label3
+            // 
+            label3.Anchor = AnchorStyles.Top;
+            label3.AutoSize = true;
+            label3.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label3.ForeColor = Color.FromArgb(6, 130, 200);
+            label3.Location = new Point(70, 88);
+            label3.Margin = new Padding(4, 0, 4, 0);
+            label3.Name = "label3";
+            label3.Size = new Size(86, 13);
+            label3.TabIndex = 38;
+            label3.Text = "Video Quality:";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label2.ForeColor = Color.FromArgb(6, 130, 200);
+            label2.Location = new Point(9, 56);
+            label2.Margin = new Padding(4, 0, 4, 0);
+            label2.Name = "label2";
+            label2.Size = new Size(43, 13);
+            label2.TabIndex = 35;
+            label2.Text = "Titulo:";
+            // 
+            // progressBar
+            // 
+            progressBar.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            progressBar.BackColor = Color.White;
+            progressBar.Location = new Point(11, 502);
+            progressBar.Margin = new Padding(4, 3, 4, 3);
+            progressBar.Name = "progressBar";
+            progressBar.Size = new Size(574, 18);
+            progressBar.Style = ProgressBarStyle.Continuous;
+            progressBar.TabIndex = 46;
+            // 
+            // label1
+            // 
+            label1.Anchor = AnchorStyles.Top;
+            label1.AutoSize = true;
+            label1.Font = new Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label1.ForeColor = Color.FromArgb(6, 130, 200);
+            label1.Location = new Point(32, 25);
+            label1.Margin = new Padding(4, 0, 4, 0);
+            label1.Name = "label1";
+            label1.Size = new Size(27, 13);
+            label1.TabIndex = 3;
+            label1.Text = "Url:";
+            // 
+            // btnAdicionarURL
+            // 
+            btnAdicionarURL.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnAdicionarURL.FlatAppearance.BorderSize = 0;
+            btnAdicionarURL.FlatStyle = FlatStyle.Flat;
+            btnAdicionarURL.IconChar = FontAwesome.Sharp.IconChar.PlusSquare;
+            btnAdicionarURL.IconColor = Color.FromArgb(6, 130, 200);
+            btnAdicionarURL.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            btnAdicionarURL.IconSize = 36;
+            btnAdicionarURL.Location = new Point(612, 18);
+            btnAdicionarURL.Name = "btnAdicionarURL";
+            btnAdicionarURL.Size = new Size(32, 32);
+            btnAdicionarURL.TabIndex = 76;
+            toolTip1.SetToolTip(btnAdicionarURL, "Adicionar Url do vídeo");
+            btnAdicionarURL.UseVisualStyleBackColor = true;
+            btnAdicionarURL.Click += btnAdicionarURL_Click;
+            // 
+            // btnBrowse
+            // 
+            btnBrowse.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnBrowse.FlatAppearance.BorderSize = 0;
+            btnBrowse.FlatStyle = FlatStyle.Flat;
+            btnBrowse.IconChar = FontAwesome.Sharp.IconChar.FolderOpen;
+            btnBrowse.IconColor = Color.FromArgb(6, 130, 200);
+            btnBrowse.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            btnBrowse.IconSize = 36;
+            btnBrowse.Location = new Point(613, 106);
+            btnBrowse.Name = "btnBrowse";
+            btnBrowse.Size = new Size(32, 32);
+            btnBrowse.TabIndex = 77;
+            toolTip1.SetToolTip(btnBrowse, "Escolha o local para salvar os vídeos");
+            btnBrowse.UseVisualStyleBackColor = true;
+            btnBrowse.Click += btnBrowse_Click;
+            // 
+            // btnLimparLista
+            // 
+            btnLimparLista.FlatAppearance.BorderSize = 0;
+            btnLimparLista.FlatStyle = FlatStyle.Flat;
+            btnLimparLista.ForeColor = SystemColors.ActiveCaption;
+            btnLimparLista.IconChar = FontAwesome.Sharp.IconChar.Broom;
+            btnLimparLista.IconColor = Color.FromArgb(6, 130, 200);
+            btnLimparLista.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            btnLimparLista.IconSize = 36;
+            btnLimparLista.Location = new Point(9, 136);
+            btnLimparLista.Name = "btnLimparLista";
+            btnLimparLista.Size = new Size(32, 32);
+            btnLimparLista.TabIndex = 78;
+            toolTip1.SetToolTip(btnLimparLista, "Limpar Lista");
+            btnLimparLista.UseVisualStyleBackColor = true;
+            btnLimparLista.Click += btnLimparLista_Click;
+            // 
+            // btnExcluirSelecionados
+            // 
+            btnExcluirSelecionados.FlatAppearance.BorderSize = 0;
+            btnExcluirSelecionados.FlatStyle = FlatStyle.Flat;
+            btnExcluirSelecionados.ForeColor = SystemColors.ActiveCaption;
+            btnExcluirSelecionados.IconChar = FontAwesome.Sharp.IconChar.Trash;
+            btnExcluirSelecionados.IconColor = Color.FromArgb(6, 130, 200);
+            btnExcluirSelecionados.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            btnExcluirSelecionados.IconSize = 36;
+            btnExcluirSelecionados.Location = new Point(56, 136);
+            btnExcluirSelecionados.Name = "btnExcluirSelecionados";
+            btnExcluirSelecionados.Size = new Size(32, 32);
+            btnExcluirSelecionados.TabIndex = 79;
+            toolTip1.SetToolTip(btnExcluirSelecionados, "Exclui vídeo selecionado na lista");
+            btnExcluirSelecionados.UseVisualStyleBackColor = true;
+            btnExcluirSelecionados.Click += btnExcluirSelecionados_Click;
+            // 
+            // btnPausar
+            // 
+            btnPausar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnPausar.FlatAppearance.BorderSize = 0;
+            btnPausar.FlatStyle = FlatStyle.Flat;
+            btnPausar.IconChar = FontAwesome.Sharp.IconChar.Pause;
+            btnPausar.IconColor = Color.FromArgb(6, 130, 200);
+            btnPausar.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            btnPausar.IconSize = 36;
+            btnPausar.Location = new Point(532, 18);
+            btnPausar.Name = "btnPausar";
+            btnPausar.Size = new Size(32, 32);
+            btnPausar.TabIndex = 78;
+            toolTip1.SetToolTip(btnPausar, "Pausa o Download");
+            btnPausar.UseVisualStyleBackColor = true;
+            btnPausar.Click += btnPausar_Click;
+            // 
+            // btnContinuar
+            // 
+            btnContinuar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnContinuar.FlatAppearance.BorderSize = 0;
+            btnContinuar.FlatStyle = FlatStyle.Flat;
+            btnContinuar.IconChar = FontAwesome.Sharp.IconChar.Play;
+            btnContinuar.IconColor = Color.FromArgb(6, 130, 200);
+            btnContinuar.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            btnContinuar.IconSize = 36;
+            btnContinuar.Location = new Point(484, 18);
+            btnContinuar.Name = "btnContinuar";
+            btnContinuar.Size = new Size(32, 32);
+            btnContinuar.TabIndex = 79;
+            toolTip1.SetToolTip(btnContinuar, "Continua download após pausa");
+            btnContinuar.UseVisualStyleBackColor = true;
+            btnContinuar.Click += btnContinuar_Click;
+            // 
+            // btnCancelar
+            // 
+            btnCancelar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnCancelar.FlatAppearance.BorderSize = 0;
+            btnCancelar.FlatStyle = FlatStyle.Flat;
+            btnCancelar.IconChar = FontAwesome.Sharp.IconChar.Stop;
+            btnCancelar.IconColor = Color.FromArgb(6, 130, 200);
+            btnCancelar.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            btnCancelar.IconSize = 36;
+            btnCancelar.Location = new Point(580, 18);
+            btnCancelar.Name = "btnCancelar";
+            btnCancelar.Size = new Size(32, 32);
+            btnCancelar.TabIndex = 80;
+            toolTip1.SetToolTip(btnCancelar, "Cancela o Download");
+            btnCancelar.UseVisualStyleBackColor = true;
+            btnCancelar.Click += btnCancelar_Click;
+            // 
+            // btnDownload
+            // 
+            btnDownload.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnDownload.FlatAppearance.BorderSize = 0;
+            btnDownload.FlatStyle = FlatStyle.Flat;
+            btnDownload.IconChar = FontAwesome.Sharp.IconChar.Download;
+            btnDownload.IconColor = Color.FromArgb(6, 130, 200);
+            btnDownload.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            btnDownload.IconSize = 36;
+            btnDownload.Location = new Point(628, 18);
+            btnDownload.Name = "btnDownload";
+            btnDownload.Size = new Size(32, 32);
+            btnDownload.TabIndex = 81;
+            toolTip1.SetToolTip(btnDownload, "Iniciar o Download");
+            btnDownload.UseVisualStyleBackColor = true;
+            btnDownload.Click += btnDownload_Click;
+            // 
+            // btnFechar
+            // 
+            btnFechar.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnFechar.FlatAppearance.BorderSize = 0;
+            btnFechar.FlatStyle = FlatStyle.Flat;
+            btnFechar.IconChar = FontAwesome.Sharp.IconChar.DoorOpen;
+            btnFechar.IconColor = Color.White;
+            btnFechar.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            btnFechar.IconSize = 36;
+            btnFechar.Location = new Point(657, 0);
+            btnFechar.Name = "btnFechar";
+            btnFechar.Size = new Size(32, 32);
+            btnFechar.TabIndex = 78;
+            toolTip1.SetToolTip(btnFechar, "Adicionar Url do vídeo");
+            btnFechar.UseVisualStyleBackColor = true;
+            btnFechar.Click += btnFechar_Click;
+            // 
+            // statusStrip1
+            // 
+            statusStrip1.BackColor = SystemColors.Control;
+            statusStrip1.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel1, Status, Dataprogress, toolStripStatusLabelStatus });
+            statusStrip1.Location = new Point(0, 523);
+            statusStrip1.Name = "statusStrip1";
+            statusStrip1.Padding = new Padding(1, 0, 16, 0);
+            statusStrip1.Size = new Size(692, 22);
+            statusStrip1.TabIndex = 47;
+            statusStrip1.Text = "statusStrip1";
+            // 
+            // toolStripStatusLabel1
+            // 
+            toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            toolStripStatusLabel1.Size = new Size(0, 17);
+            // 
+            // Status
+            // 
+            Status.Name = "Status";
+            Status.Size = new Size(0, 17);
+            // 
+            // Dataprogress
+            // 
+            Dataprogress.Name = "Dataprogress";
+            Dataprogress.Size = new Size(0, 17);
+            // 
+            // toolStripStatusLabelStatus
+            // 
+            toolStripStatusLabelStatus.ForeColor = Color.White;
+            toolStripStatusLabelStatus.LinkColor = Color.FromArgb(8, 128, 255);
+            toolStripStatusLabelStatus.Name = "toolStripStatusLabelStatus";
+            toolStripStatusLabelStatus.Size = new Size(12, 17);
+            toolStripStatusLabelStatus.Text = "-";
+            // 
+            // txtUrl
+            // 
+            txtUrl.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            txtUrl.BackColor = Color.Aquamarine;
+            txtUrl.BorderStyle = BorderStyle.FixedSingle;
+            txtUrl.Location = new Point(70, 22);
+            txtUrl.Margin = new Padding(4, 3, 4, 3);
+            txtUrl.Name = "txtUrl";
+            txtUrl.Size = new Size(538, 23);
+            txtUrl.TabIndex = 58;
+            // 
+            // pictureBox1
+            // 
+            pictureBox1.Anchor = AnchorStyles.Top;
+            pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
+            pictureBox1.Location = new Point(303, 1);
+            pictureBox1.Margin = new Padding(4, 3, 4, 3);
+            pictureBox1.Name = "pictureBox1";
+            pictureBox1.Size = new Size(54, 41);
+            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureBox1.TabIndex = 73;
+            pictureBox1.TabStop = false;
             // 
             // lblTotalLinks
             // 
-            this.lblTotalLinks.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.lblTotalLinks.AutoSize = true;
-            this.lblTotalLinks.BackColor = System.Drawing.Color.Transparent;
-            this.lblTotalLinks.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.lblTotalLinks.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(8)))), ((int)(((byte)(142)))), ((int)(((byte)(254)))));
-            this.lblTotalLinks.Location = new System.Drawing.Point(415, 174);
-            this.lblTotalLinks.Name = "lblTotalLinks";
-            this.lblTotalLinks.Size = new System.Drawing.Size(28, 17);
-            this.lblTotalLinks.TabIndex = 51;
-            this.lblTotalLinks.Text = "0/0";
+            lblTotalLinks.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            lblTotalLinks.AutoSize = true;
+            lblTotalLinks.BackColor = Color.Transparent;
+            lblTotalLinks.Font = new Font("Microsoft Sans Serif", 10F);
+            lblTotalLinks.ForeColor = Color.FromArgb(6, 130, 200);
+            lblTotalLinks.Location = new Point(559, 134);
+            lblTotalLinks.Margin = new Padding(4, 0, 4, 0);
+            lblTotalLinks.Name = "lblTotalLinks";
+            lblTotalLinks.Size = new Size(28, 17);
+            lblTotalLinks.TabIndex = 51;
+            lblTotalLinks.Text = "0/0";
+            // 
+            // groupBox1
+            // 
+            groupBox1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            groupBox1.Controls.Add(btnBrowse);
+            groupBox1.Controls.Add(btnAdicionarURL);
+            groupBox1.Controls.Add(label1);
+            groupBox1.Controls.Add(txtUrl);
+            groupBox1.Controls.Add(cmbVideoQuality);
+            groupBox1.Controls.Add(txtFilePath);
+            groupBox1.Controls.Add(txtTitle);
+            groupBox1.Controls.Add(label3);
+            groupBox1.Controls.Add(label5);
+            groupBox1.Controls.Add(label2);
+            groupBox1.Controls.Add(label4);
+            groupBox1.Controls.Add(chkAudioOnly);
+            groupBox1.Controls.Add(cmbAudioQuality);
+            groupBox1.Location = new Point(11, 102);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(668, 149);
+            groupBox1.TabIndex = 75;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Entrada/Configurações";
+            // 
+            // groupBox2
+            // 
+            groupBox2.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            groupBox2.Controls.Add(btnExcluirSelecionados);
+            groupBox2.Controls.Add(btnLimparLista);
+            groupBox2.Controls.Add(ListBoxURL);
+            groupBox2.Controls.Add(lblAnalisando);
+            groupBox2.Controls.Add(lblTotalLinks);
+            groupBox2.Location = new Point(11, 254);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new Size(668, 182);
+            groupBox2.TabIndex = 76;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Lista de Downloads:";
+            // 
+            // groupBox3
+            // 
+            groupBox3.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            groupBox3.Controls.Add(btnDownload);
+            groupBox3.Controls.Add(btnCancelar);
+            groupBox3.Controls.Add(btnContinuar);
+            groupBox3.Controls.Add(btnPausar);
+            groupBox3.Location = new Point(12, 437);
+            groupBox3.Name = "groupBox3";
+            groupBox3.Size = new Size(667, 56);
+            groupBox3.TabIndex = 77;
+            groupBox3.TabStop = false;
+            // 
+            // panel1
+            // 
+            panel1.BackColor = SystemColors.Highlight;
+            panel1.Controls.Add(btnFechar);
+            panel1.Controls.Add(kryptonLabel1);
+            panel1.Controls.Add(pictureBox1);
+            panel1.Dock = DockStyle.Top;
+            panel1.Location = new Point(0, 0);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(692, 72);
+            panel1.TabIndex = 78;
+            // 
+            // kryptonLabel1
+            // 
+            kryptonLabel1.Dock = DockStyle.Bottom;
+            kryptonLabel1.Location = new Point(0, 42);
+            kryptonLabel1.Name = "kryptonLabel1";
+            kryptonLabel1.Size = new Size(692, 30);
+            kryptonLabel1.StateCommon.ShortText.Color1 = Color.White;
+            kryptonLabel1.StateCommon.ShortText.Color2 = Color.White;
+            kryptonLabel1.StateCommon.ShortText.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            kryptonLabel1.StateCommon.ShortText.TextH = Krypton.Toolkit.PaletteRelativeAlign.Center;
+            kryptonLabel1.TabIndex = 75;
+            kryptonLabel1.Values.Text = "Download de vídeos do YouTube";
             // 
             // FrmDowload
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(250)))), ((int)(((byte)(252)))), ((int)(((byte)(252)))));
-            this.ClientSize = new System.Drawing.Size(554, 425);
-            this.Controls.Add(this.btnFechar);
-            this.Controls.Add(this.lblJanelaAberta);
-            this.Controls.Add(this.btnLimparLista);
-            this.Controls.Add(this.kryptonPanel1);
-            this.Controls.Add(this.statusStrip1);
-            this.Controls.Add(this.btnAdicionarURL);
-            this.Controls.Add(this.btnContinuar);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.txtUrl);
-            this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.btnDownload);
-            this.Controls.Add(this.btnPausar);
-            this.Controls.Add(this.btnCancelar);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Name = "FrmDowload";
-            this.Palette = this.kryptonPalette1;
-            this.PaletteMode = ComponentFactory.Krypton.Toolkit.PaletteMode.Custom;
-            this.ShowIcon = false;
-            this.Text = "ConvertPro";
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.cmbAudioQuality)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.cmbQuality)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.btnFechar)).EndInit();
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.kryptonPanel1)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.FromArgb(250, 252, 252);
+            ClientSize = new Size(692, 545);
+            Controls.Add(panel1);
+            Controls.Add(groupBox3);
+            Controls.Add(groupBox2);
+            Controls.Add(groupBox1);
+            Controls.Add(lblStatusContagem);
+            Controls.Add(statusStrip1);
+            Controls.Add(lblProgress);
+            Controls.Add(progressBar);
+            FormBorderStyle = FormBorderStyle.None;
+            Margin = new Padding(4, 3, 4, 3);
+            Name = "FrmDowload";
+            ShowIcon = false;
+            Text = "ConvertPro";
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
+            groupBox3.ResumeLayout(false);
+            panel1.ResumeLayout(false);
+            panel1.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
 
         }
 
         #endregion
-        private ComponentFactory.Krypton.Toolkit.KryptonPalette kryptonPalette1;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private MetroFramework.Controls.MetroTextBox txtUrl;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button btnPausar;
-        private MetroFramework.Controls.MetroTextBox txtTitle;
-        private System.Windows.Forms.Button btnDownload;
-        private System.Windows.Forms.Button btnCancelar;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
-        private Krypton.Toolkit.KryptonComboBox cmbAudioQuality;
-        private Krypton.Toolkit.KryptonComboBox cmbQuality;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label5;
-        private MetroFramework.Controls.MetroTextBox txtFilePath;
-        private System.Windows.Forms.Button btnBrowse;
-        private System.Windows.Forms.Button btnContinuar;
         private System.Windows.Forms.ToolTip toolTip1;
-        private System.Windows.Forms.Button btnAdicionarURL;
         private System.Windows.Forms.Label lblStatusContagem;
         private System.Windows.Forms.Label lblProgress;
         private System.Windows.Forms.ProgressBar progressBar;
@@ -643,18 +609,34 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripStatusLabel Status;
         private System.Windows.Forms.ToolStripStatusLabel Dataprogress;
-        private System.Windows.Forms.PictureBox btnFechar;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.ComponentModel.BackgroundWorker Downloader_BackProcess;
         private System.ComponentModel.BackgroundWorker bgWorkerGetVideo;
         private System.Windows.Forms.CheckBox chkAudioOnly;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelStatus;
-        private Krypton.Toolkit.KryptonPanel kryptonPanel1;
-        private System.Windows.Forms.Label lblJanelaAberta;
-        private Krypton.Toolkit.KryptonListBox ListBoxURL;
-        private System.Windows.Forms.Button btnLimparLista;
         private System.Windows.Forms.Label lblAnalisando;
-        private System.Windows.Forms.Label lblTotalLinks;
+        private System.Windows.Forms.ListBox ListBoxURL;
+        private System.Windows.Forms.TextBox txtTitle;
+        private System.Windows.Forms.TextBox txtFilePath;
+        private System.Windows.Forms.TextBox txtUrl;
+        private System.Windows.Forms.ComboBox cmbVideoQuality;
+        private System.Windows.Forms.ComboBox cmbAudioQuality;
+        private PictureBox pictureBox1;
+        private Label lblTotalLinks;
+        private GroupBox groupBox1;
+        private GroupBox groupBox2;
+        private GroupBox groupBox3;
+        private Panel panel1;
+        private Krypton.Toolkit.KryptonLabel kryptonLabel1;
+        private FontAwesome.Sharp.IconButton btnAdicionarURL;
+        private FontAwesome.Sharp.IconButton btnBrowse;
+        private FontAwesome.Sharp.IconButton btnExcluirSelecionados;
+        private FontAwesome.Sharp.IconButton btnLimparLista;
+        private FontAwesome.Sharp.IconButton btnDownload;
+        private FontAwesome.Sharp.IconButton btnCancelar;
+        private FontAwesome.Sharp.IconButton btnContinuar;
+        private FontAwesome.Sharp.IconButton btnPausar;
+        private FontAwesome.Sharp.IconButton btnFechar;
     }
 }
 

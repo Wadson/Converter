@@ -1,333 +1,47 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2EE41BB3-0BDA-4A63-A8C9-08F83C77782B}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Converter</RootNamespace>
-    <AssemblyName>Converter</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Deterministic>true</Deterministic>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>D:\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>x86</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>x64</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>Resources\ConvertPro.ico</ApplicationIcon>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject>Converter.Program</StartupObject>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="AngleSharp, Version=1.2.0.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
-      <HintPath>packages\AngleSharp.1.2.0\lib\net472\AngleSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="CliWrap, Version=3.7.1.0, Culture=neutral, PublicKeyToken=1c4a4fc2d6886e5a, processorArchitecture=MSIL">
-      <HintPath>packages\CliWrap.3.7.1\lib\netstandard2.0\CliWrap.dll</HintPath>
-    </Reference>
-    <Reference Include="ComponentFactory.Krypton.Docking">
-      <HintPath>..\Krypton\Bin\ComponentFactory.Krypton.Docking.dll</HintPath>
-    </Reference>
-    <Reference Include="ComponentFactory.Krypton.Navigator">
-      <HintPath>..\Krypton\Bin\ComponentFactory.Krypton.Navigator.dll</HintPath>
-    </Reference>
-    <Reference Include="ComponentFactory.Krypton.Ribbon">
-      <HintPath>..\Krypton\Bin\ComponentFactory.Krypton.Ribbon.dll</HintPath>
-    </Reference>
-    <Reference Include="ComponentFactory.Krypton.Toolkit">
-      <HintPath>..\Krypton\Bin\ComponentFactory.Krypton.Toolkit.dll</HintPath>
-    </Reference>
-    <Reference Include="ComponentFactory.Krypton.Workspace">
-      <HintPath>..\Krypton\Bin\ComponentFactory.Krypton.Workspace.dll</HintPath>
-    </Reference>
-    <Reference Include="FFMpegCore, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\FFMpegCore.5.1.0\lib\netstandard2.0\FFMpegCore.dll</HintPath>
-    </Reference>
-    <Reference Include="Instances, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Instances.3.0.0\lib\netstandard2.0\Instances.dll</HintPath>
-    </Reference>
-    <Reference Include="Krypton.Toolkit, Version=90.24.11.317, Culture=neutral, PublicKeyToken=a87e673e9ecb6e8e, processorArchitecture=MSIL">
-      <HintPath>packages\Krypton.Toolkit.90.24.11.317\lib\net48\Krypton.Toolkit.dll</HintPath>
-    </Reference>
-    <Reference Include="libvideo, Version=3.2.8.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\VideoLibrary.3.2.8\lib\netstandard2.0\libvideo.dll</HintPath>
-    </Reference>
-    <Reference Include="MetroFramework, Version=1.4.0.0, Culture=neutral, PublicKeyToken=5f91a84759bf584a, processorArchitecture=MSIL">
-      <HintPath>packages\MetroModernUI.1.4.0.0\lib\net\MetroFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="MetroFramework.Design, Version=1.4.0.0, Culture=neutral, PublicKeyToken=5f91a84759bf584a, processorArchitecture=MSIL">
-      <HintPath>packages\MetroModernUI.1.4.0.0\lib\net\MetroFramework.Design.dll</HintPath>
-    </Reference>
-    <Reference Include="MetroFramework.Fonts, Version=1.4.0.0, Culture=neutral, PublicKeyToken=5f91a84759bf584a, processorArchitecture=MSIL">
-      <HintPath>packages\MetroModernUI.1.4.0.0\lib\net\MetroFramework.Fonts.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=9.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.Bcl.AsyncInterfaces.9.0.1\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
-    </Reference>
-    <Reference Include="NReco.VideoConverter, Version=1.2.1.0, Culture=neutral, PublicKeyToken=395ccb334978a0cd, processorArchitecture=MSIL">
-      <HintPath>packages\NReco.VideoConverter.1.2.1\lib\net45\NReco.VideoConverter.dll</HintPath>
-    </Reference>
-    <Reference Include="PresentationFramework.Luna" />
-    <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.4.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Buffers.4.6.0\lib\net462\System.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.CodeDom, Version=9.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.CodeDom.9.0.0\lib\net462\System.CodeDom.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data.SQLite">
-      <HintPath>C:\Users\wadso\Downloads\System.Data.SQLite.DLL</HintPath>
-    </Reference>
-    <Reference Include="System.Design" />
-    <Reference Include="System.IO.Pipelines, Version=9.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.IO.Pipelines.9.0.1\lib\net462\System.IO.Pipelines.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Management" />
-    <Reference Include="System.Memory, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Memory.4.6.0\lib\net462\System.Memory.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>packages\System.Numerics.Vectors.4.6.0\lib\net462\System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>packages\System.Runtime.CompilerServices.Unsafe.6.1.0\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Text.Encoding.CodePages, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>packages\System.Text.Encoding.CodePages.8.0.0\lib\net462\System.Text.Encoding.CodePages.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Text.Encodings.Web, Version=9.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Text.Encodings.Web.9.0.1\lib\net462\System.Text.Encodings.Web.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Text.Json, Version=9.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Text.Json.9.0.1\lib\net462\System.Text.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.Threading.Tasks.Extensions.4.6.0\lib\net462\System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Xabe.FFmpeg, Version=6.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Xabe.FFmpeg.6.0.0\lib\netstandard2.0\Xabe.FFmpeg.dll</HintPath>
-    </Reference>
-    <Reference Include="Xabe.FFmpeg.Downloader, Version=6.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Xabe.FFmpeg.Downloader.6.0.0\lib\netstandard2.0\Xabe.FFmpeg.Downloader.dll</HintPath>
-    </Reference>
-    <Reference Include="YoutubeExplode, Version=6.5.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\YoutubeExplode.6.5.3\lib\netstandard2.0\YoutubeExplode.dll</HintPath>
-    </Reference>
-    <Reference Include="YoutubeExplode.Converter, Version=6.5.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\YoutubeExplode.Converter.6.5.3\lib\netstandard2.0\YoutubeExplode.Converter.dll</HintPath>
-    </Reference>
+    <PackageReference Include="FFMpegCore" Version="5.4.0" />
+    <PackageReference Include="FontAwesome.Sharp" Version="6.6.0" />
+    <PackageReference Include="Krypton.Toolkit" Version="100.26.1.19" />
+    <PackageReference Include="NReco.VideoConverter" Version="1.2.1" />
+    <PackageReference Include="WindowsAPICodePack" Version="8.0.14" />
+    <PackageReference Include="YoutubeExplode" Version="6.5.6" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="FrmCompressMpTreis .cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FrmCompressMpTreis .Designer.cs">
-      <DependentUpon>FrmCompressMpTreis .cs</DependentUpon>
-    </Compile>
-    <Compile Include="FrmConvertPro.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FrmConvertPro.Designer.cs">
-      <DependentUpon>FrmConvertPro.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FrmDowload.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FrmDowload.Designer.cs">
-      <DependentUpon>FrmDowload.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FrmConverterMpQuatro.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="FrmConverterMpQuatro.Designer.cs">
-      <DependentUpon>FrmConverterMpQuatro.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
+    <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="UI\MultiColorreModernUI.cs" />
-    <Compile Include="WRComboBox.cs">
-      <SubType>UserControl</SubType>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="FrmCompressMpTreis .resx">
-      <DependentUpon>FrmCompressMpTreis .cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FrmConvertPro.resx">
-      <DependentUpon>FrmConvertPro.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FrmDowload.resx">
-      <DependentUpon>FrmDowload.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FrmConverterMpQuatro.resx">
-      <DependentUpon>FrmConverterMpQuatro.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.8">
-      <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.8 %28x86 e x64%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="README.md" />
-    <None Include="Resources\LogoQuadradoDois.jpeg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\LogoQuadradoTreis.jpeg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\LogoConverterIco.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\LogoConvertPro2  WR.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\LogoQuadradoTreis.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\DownloadYoutube.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Pause.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Continuar.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Audio.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Stop.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Convert.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Video2.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\replay_24dp_0893FC_FILL0_wght400_GRAD0_opsz24.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Video.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Play.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Folders.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Continue.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\add_link_24.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\close_inactive_24.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="LogoQuadrado.ico" />
-    <None Include="Resources\LogoConvertProH.png" />
-    <None Include="Resources\LogoConvertProhHorizontal.png" />
-    <None Include="Resources\Downloads.png" />
-    <None Include="Resources\ConvertPro.ico" />
-    <None Include="Resources\Close.png" />
-    <None Include="Resources\Conversor.jpeg" />
-    <None Include="Resources\Downlo.jpeg" />
-    <None Include="Resources\Down.jpeg" />
-    <None Include="Resources\LogoConvertPro2  WR %281%29.png" />
-    <None Include="Resources\LogoConvertProWR.png" />
-    <None Include="Resources\download-diretoBranco.png" />
-    <None Include="Resources\MpConverter-.png" />
-    <None Include="Resources\Menu.png" />
-    <None Include="Resources\Cerrar.png" />
-    <None Include="Resources\Minimizar.png" />
-    <None Include="Resources\Maximizar.png" />
-    <None Include="Resources\Restaurar.png" />
-    <None Include="Resources\Download_16dp.png" />
-    <None Include="Resources\MpConverter.png" />
-    <None Include="Resources\mp4.png" />
-    <None Include="Resources\Down.png" />
-    <None Include="Resources\Clear.png" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
 </Project>

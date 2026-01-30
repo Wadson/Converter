@@ -1,532 +1,763 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Windows.Forms;
-using NReco.VideoConverter;
-using Xabe.FFmpeg.Downloader;
-using FFMpegCore;
-using System.Threading;
-using VideoLibrary;
-using System.Text.RegularExpressions;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Net;
+using System.Diagnostics;
 using System.Drawing;
-using ComponentFactory.Krypton.Toolkit;
+using System.IO;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using FontAwesome.Sharp;
 
 
 namespace Converter
 {
-    public partial class FrmDowload : KryptonForm
+    public partial class FrmDowload : Form
     {
-        private YouTube youtube = YouTube.Default;
-        public HashSet<string> videoId = new HashSet<string>();
-        private List<string> mediaPaths = new List<string>();
-        private long totalbytes = 0;
-        private long collctedbytes = 0;
-        private string selectedVideoQuality = "";
-        private string selectedAudioQuality = "";
-        private static string re = @"list=([A-z0-9-]+(&|$))";
-        private static Regex listreg = new Regex(re);
-        private static string watchLink = "https://www.youtube.com/watch?v=";
-        private string formattedUrl;
-        int totalVideos = 0;
-        int videoAtual = 0;
-        CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-        private VideoDownloader downloader; // Corrigido o erro CS0246
+        private bool isDownloading = false;
+        private bool isPaused = false; // <--- nova flag
 
-        private CancellationTokenSource cancelToken = new CancellationTokenSource();
-        private ManualResetEventSlim pauseEvent = new ManualResetEventSlim(true); // Começa ativo
+        private Process currentProcess = null;
+        private string selectedVideoQuality = "1080";
+        private string selectedAudioQuality = "128";
+        private readonly string ytDlpPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "yt-dlp.exe");
+        private readonly string ffmpegPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ffmpeg.exe");
+        private CancellationTokenSource cancellationTokenSource;
+
+        // Lista interna expandida de vídeos
+        private readonly BindingSource expandedList = new BindingSource();
+
+        // Pasta base de downloads (usa o campo txtFilePath atual; fallback para Desktop)
+        private string BaseDownloadFolder =>
+            !string.IsNullOrWhiteSpace(txtFilePath?.Text)
+                ? txtFilePath.Text
+                : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "YouTube Downloads");
+
+
         public FrmDowload()
         {
             InitializeComponent();
-            
-            // Configurações iniciais do TextBox
-            txtUrl.Text = "Enter video link";
-            txtUrl.GotFocus += RemoveText;
-            txtUrl.LostFocus += AddText;           
-            InitializeButtons();
-            ListBoxURL.SelectedIndexChanged += new EventHandler(CheckListBox);
-            downloader = new VideoDownloader(this); // Instância global
+            InitializeForm();
         }
-        private void CheckListBox(object sender, EventArgs e)
+
+        private void InitializeForm()
         {
-            if (ListBoxURL.Items.Count > 0)
+            txtUrl.Text = "Enter video or playlist link";
+            txtUrl.GotFocus += (s, e) => { if (txtUrl.Text.Contains("Enter")) txtUrl.Clear(); };
+            txtUrl.LostFocus += (s, e) => { if (string.IsNullOrWhiteSpace(txtUrl.Text)) txtUrl.Text = "Enter video or playlist link"; };
+
+            cmbVideoQuality.Items.AddRange(new object[] { "4320p (8K)", "2160p (4K)", "1440p", "1080p", "720p", "480p", "360p", "Melhor disponível" });
+            cmbVideoQuality.SelectedIndex = 3;
+
+            cmbAudioQuality.Items.AddRange(new object[] { "320", "256", "192", "160", "128", "96" });
+            cmbAudioQuality.SelectedIndex = 4;
+
+            txtFilePath.Text = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "YouTube Downloads");
+            if (!Directory.Exists(txtFilePath.Text))
+                Directory.CreateDirectory(txtFilePath.Text);
+
+            ListBoxURL.DataSource = expandedList;
+
+            AtualizarTotalLinks();
+            AtualizarBotoes();
+
+            // ====== VALIDAÇÃO MAIS ROBUSTA DOS EXECUTÁVEIS ======
+            if (!File.Exists(ytDlpPath))
             {
-                // Habilita os botões de Browse e Download quando houver itens no ListBox
-                btnBrowse.Enabled = true;
-                btnDownload.Enabled = true;
+                MessageBox.Show("yt-dlp.exe não encontrado!\nColoque o arquivo 'yt-dlp.exe' na mesma pasta do programa.\n\nBaixar: https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe",
+                    "Aviso Crítico", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            else
+
+            if (!File.Exists(ffmpegPath))
             {
-                // Desabilita todos os botões quando não houver itens no ListBox
-                btnCancelar.Enabled = false;
-                btnPausar.Enabled = false;
-                btnContinuar.Enabled = false;
-                btnDownload.Enabled = false;
-                btnBrowse.Enabled = false;
+                MessageBox.Show("ffmpeg.exe não encontrado!\nColoque o arquivo 'ffmpeg.exe' na mesma pasta do programa.\n\nBaixar: https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip",
+                    "Aviso Crítico", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+            // ====== FIM DA VALIDAÇÃO ======
+
+            btnExcluirSelecionados.Enabled = false;
+            AtualizarBotoes();
         }
 
-        private void InitializeButtons()
-        {
-            // Inicializa os botões com seus estados iniciais
-            btnAdicionarURL.Enabled = true;
-            btnCancelar.Enabled = false;
-            btnPausar.Enabled = false;
-            btnContinuar.Enabled = false;
-            btnDownload.Enabled = false;
-            btnBrowse.Enabled = false;
-        }       
-        // Evento para limpar o texto quando o usuário clicar no TextBox
-        public void RemoveText(object sender, EventArgs e)
-        {
-            if (txtUrl.Text == "Enter video link")
-            {
-                txtUrl.Text = "";
-            }
-        }
-
-        // Evento para adicionar o texto novamente se o campo estiver vazio
-        public void AddText(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(txtUrl.Text))
-            {
-                txtUrl.Text = "Enter video link";
-            }
-        }
-       
-
-        private string LimparUrl(string url)
-        {
-            // Remove parâmetros extras da URL
-            Uri uri = new Uri(url);
-            string cleanUrl = uri.GetLeftPart(UriPartial.Path); // Obtém apenas o caminho, sem parâmetros
-            return cleanUrl;
-        }
-
-        // Função para limpar caracteres inválidos no nome do arquivo
-        private string CleanFileName(string fileName)
-        {
-            char[] invalidChars = Path.GetInvalidFileNameChars();
-            foreach (char c in invalidChars)
-            {
-                fileName = fileName.Replace(c.ToString(), string.Empty);
-            }
-            return fileName;
-        }
-
-        // Função para garantir que o diretório de destino exista
-        private void EnsureDirectoryExists(string path)
-        {
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path); // Cria o diretório se não existir
-            }
-        }
-
-        //private void AdicionarLinkListBoxURL()
-        //{
-        //    string url = txtUrl.Text.Trim();
-
-        //    if (string.IsNullOrEmpty(url))
-        //    {
-        //        MessageBox.Show("Please enter a valid URL");
-        //        return;
-        //    }
-
-        //    // Verifica se a URL já foi adicionada ao ListBox antes de adicionar
-        //    if (ListBoxURL.Items.Contains(url))
-        //    {
-        //        MessageBox.Show("Este link já foi adicionado.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //        return;
-        //    }
-
-        //    try
-        //    {
-        //        // Obtém os vídeos da URL fornecida
-        //        var video = youtube.GetVideo(url);
-
-        //        if (video == null)
-        //        {
-        //            MessageBox.Show("URL inválida! Por favor, insira um link válido do YouTube.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //            return;
-        //        }
-
-        //        // Adiciona a URL ao ListBox somente se não for duplicada
-        //        ListBoxURL.Items.Add(url);
-        //        txtUrl.Clear();  // Limpa o campo de texto
-
-        //        CheckListBox(null, EventArgs.Empty);  // Verifica se os botões precisam ser habilitados ou desabilitados
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show("Erro ao processar a URL: " + ex.Message, "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //    }
-        //}
         private void AtualizarTotalLinks()
         {
-            lblTotalLinks.Text = $"Total de Links: {ListBoxURL.Items.Count}";
+            lblTotalLinks.Text = $"Total: {expandedList.Count}";
         }
 
-        private void GetVideoData(string link, bool playlist = false)
+        private void AtualizarBotoes()
         {
-            var videoData = youtube.GetAllVideos(link);
+            bool temItens = expandedList.Count > 0;
 
-            // Verificação de link inválido
-            if (videoData == null || !videoData.Any())
+            // controles básicos
+            btnAdicionarURL.Enabled = !isDownloading;
+            btnDownload.Enabled = temItens && !isDownloading;
+            btnCancelar.Enabled = isDownloading;
+
+            // excluir só quando houver itens E quando NÃO estiver baixando
+            btnExcluirSelecionados.Enabled = temItens && !isDownloading;
+
+            // pausa/continua dependem de isDownloading/isPaused
+            if (!isDownloading)
             {
-                MessageBox.Show("Link inválido ou o vídeo não pôde ser carregado.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            var resolutions = videoData
-                .Where(r => r.AdaptiveKind == AdaptiveKind.Video && r.Format == VideoFormat.Mp4)
-                .Select(r => r.Resolution)
-                .Distinct()
-                .OrderBy(r => r);
-
-            var bitRates = videoData
-                .Where(r => r.AdaptiveKind == AdaptiveKind.Audio)
-                .Select(r => r.AudioBitrate)
-                .Distinct()
-                .OrderBy(b => b);
-
-            // Limpa os itens anteriores antes de adicionar novos
-            cmbQuality.Invoke((MethodInvoker)(() => cmbQuality.Items.Clear()));
-            cmbAudioQuality.Invoke((MethodInvoker)(() => cmbAudioQuality.Items.Clear()));
-
-            foreach (var item in resolutions)
-            {
-                cmbQuality.Invoke((MethodInvoker)(() => cmbQuality.Items.Add(item)));
-            }
-
-            foreach (var item in bitRates)
-            {
-                cmbAudioQuality.Invoke((MethodInvoker)(() => cmbAudioQuality.Items.Add(item)));
-            }
-
-            if (cmbQuality.Items.Count > 0)
-            {
-                cmbQuality.Invoke((MethodInvoker)(() =>
-                {
-                    cmbQuality.Sorted = true;
-                    cmbQuality.SelectedIndex = 0;
-                }));
-                cmbAudioQuality.Invoke((MethodInvoker)(() =>
-                {
-                    cmbAudioQuality.Sorted = true;
-                    cmbAudioQuality.SelectedIndex = 0;
-                }));
-            }
-
-            // Atualização do título do vídeo
-            var firstVideo = videoData.FirstOrDefault();
-            if (firstVideo != null)
-            {
-                txtTitle.Invoke((MethodInvoker)(() => txtTitle.Text = firstVideo.Title));
+                btnPausar.Enabled = false;
+                btnContinuar.Enabled = false;
             }
             else
             {
-                txtTitle.Invoke((MethodInvoker)(() => txtTitle.Text = "Título não disponível"));
+                // está baixando - usar isPaused para alternar
+                if (!isPaused)
+                {
+                    btnPausar.Enabled = true;
+                    btnContinuar.Enabled = false;
+                }
+                else
+                {
+                    btnPausar.Enabled = false;
+                    btnContinuar.Enabled = true;
+                }
             }
-
-            Status.Text = playlist ? $"{videoData.Count()} Vídeos" : "Vídeo Único";
-            Status.BackColor = System.Drawing.Color.Green;
         }
-        private async void AdicionarURL()
+
+
+        private bool IsPlaylistLink(string url)
         {
-            string url = txtUrl.Text.Trim();
+            return url.Contains("list=") && Regex.IsMatch(url, @"list=([a-zA-Z0-9_-]+)");
+        }
 
-            if (string.IsNullOrEmpty(url))
-            {
-                MessageBox.Show("Por favor, insira uma URL.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            var cts = new CancellationTokenSource();
+        private async Task<(bool IsValid, bool IsPlaylist, string Title, int Count)> GetInfoAsync(string url)
+        {
+            if (!File.Exists(ytDlpPath))
+                return (false, false, "", 0);
 
             try
             {
-                HabilitarControles(false); // Desabilita controles
-                lblAnalisando.Visible = true; // Exibe "Analisando..."
-                var token = cts.Token;
-                var animationTask = AnalisarMensagemAnimation(token); // Inicia animação
-
-                // 🔎 Verificação completa do link
-                bool linkValido = await VerificarLinkAsync(url);
-
-                cts.Cancel(); // Encerra a animação após a verificação
-
-
-
-                if (!linkValido)
+                var psi = new ProcessStartInfo
                 {
-                    MessageBox.Show("O link inserido é inválido ou não está acessível.", "Link Inválido", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return; // Impede a adição no ListBox
+                    FileName = ytDlpPath,
+                    Arguments = $"--dump-single-json --flat-playlist --no-warnings \"{url}\"",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true,
+                    StandardOutputEncoding = System.Text.Encoding.UTF8
+                };
+
+                using var p = Process.Start(psi);
+                string jsonStr = await p.StandardOutput.ReadToEndAsync();
+                await p.WaitForExitAsync();
+
+                if (p.ExitCode != 0 || string.IsNullOrWhiteSpace(jsonStr))
+                {
+                    return await GetBasicInfoAsync(url);
                 }
 
-                // Verifica se o link é duplicado
-                if (linkValido)
+                try
                 {
-                    if (!ListBoxURL.Items.Contains(url))
-                    {
-                        ListBoxURL.Items.Add(url);
-                        AtualizarTotalLinks();
-                        // Chamar GetVideoData de forma assíncrona para não bloquear a UI
-                        Task.Run(() => GetVideoData(url));
-                        txtUrl.Clear(); // Limpa o campo de texto
-                        txtUrl.Focus(); // Foca no campo de texto
-                        txtUrl.BackColor = System.Drawing.Color.YellowGreen; // Restaura a cor de fundo
-                    }
-                    else
-                    {
-                        MessageBox.Show("Este link já foi adicionado.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    }
-                }
-                //Acima pode deletar
+                    var json = JsonNode.Parse(jsonStr) as JsonObject;
 
-                //// Se válido e não estiver na lista, adiciona
-                //// Verifica se a URL já foi adicionada à ListBox
-                //if (!ListBoxURL.Items.Contains(url))
-                //{
-                //    ListBoxURL.Items.Add(url);
-                //    AtualizarTotalLinks();
-                //}
-                //else
-                //{
-                //    MessageBox.Show("Este link já foi adicionado.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                //}
+                    bool ehPlaylist = json?["_type"]?.ToString() == "playlist" ||
+                                     json?["playlist_id"]?.ToString() is string id && !string.IsNullOrEmpty(id);
+
+                    int count = json?["playlist_count"]?.GetValue<int>() ??
+                               json?["n_entries"]?.GetValue<int>() ?? 1;
+
+                    string tituloPlaylist = json?["playlist_title"]?.ToString() ?? "";
+                    string tituloVideo = json?["title"]?.ToString() ?? "Vídeo";
+
+                    string tituloFinal = ehPlaylist && !string.IsNullOrEmpty(tituloPlaylist) ? tituloPlaylist : tituloVideo;
+
+                    return (true, ehPlaylist, tituloFinal, count);
+                }
+                catch
+                {
+                    return (true, false, "Vídeo válido", 1);
+                }
             }
-            catch (Exception ex)
+            catch
             {
-                MessageBox.Show("Erro ao processar a URL: " + ex.Message, "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return (false, false, "", 0);
+            }
+        }
+
+        private async Task<(bool IsValid, bool IsPlaylist, string Title, int Count)> GetBasicInfoAsync(string url)
+        {
+            try
+            {
+                var psi = new ProcessStartInfo
+                {
+                    FileName = ytDlpPath,
+                    Arguments = $"--print \"%(title)s\" --print \"%(playlist_title)s\" --print \"%(playlist_count)s\" --no-warnings \"{url}\"",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    CreateNoWindow = true,
+                    StandardOutputEncoding = System.Text.Encoding.UTF8
+                };
+
+                using var p = Process.Start(psi);
+                string output = await p.StandardOutput.ReadToEndAsync();
+                await p.WaitForExitAsync();
+
+                if (p.ExitCode != 0) return (false, false, "", 0);
+
+                var lines = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+                string title = lines.Length > 0 ? lines[0] : "Vídeo";
+                string playlistTitle = lines.Length > 1 ? lines[1] : "";
+                string playlistCountStr = lines.Length > 2 ? lines[2] : "1";
+
+                bool isPlaylist = !string.IsNullOrEmpty(playlistTitle) && playlistTitle != "NA";
+                int count = int.TryParse(playlistCountStr, out int c) ? c : 1;
+
+                return (true, isPlaylist, isPlaylist ? playlistTitle : title, count);
+            }
+            catch
+            {
+                return (false, false, "", 0);
+            }
+        }
+
+        // ========================= PEGAR URLs DA PLAYLIST =========================
+        private async Task<System.Collections.Generic.List<PlaylistVideo>> GetPlaylistVideosAsync(string url)
+        {
+            var videos = new System.Collections.Generic.List<PlaylistVideo>();
+
+            try
+            {
+                var psi = new ProcessStartInfo
+                {
+                    FileName = ytDlpPath,
+                    Arguments = $"--dump-single-json --flat-playlist --no-warnings \"{url}\"",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true,
+                    StandardOutputEncoding = System.Text.Encoding.UTF8
+                };
+
+                using var p = Process.Start(psi);
+                string jsonStr = await p.StandardOutput.ReadToEndAsync();
+                await p.WaitForExitAsync();
+
+                var json = JsonNode.Parse(jsonStr) as JsonObject;
+                if (json == null) return videos;
+
+                string playlistTitle = json?["title"]?.ToString() ?? "Playlist";
+
+                var entries = json?["entries"] as JsonArray;
+                if (entries != null)
+                {
+                    foreach (var entry in entries)
+                    {
+                        string videoId = entry?["id"]?.ToString();
+                        string videoTitle = entry?["title"]?.ToString() ?? videoId;
+                        if (!string.IsNullOrEmpty(videoId))
+                        {
+                            videos.Add(new PlaylistVideo
+                            {
+                                Url = $"https://www.youtube.com/watch?v={videoId}",
+                                Title = videoTitle,
+                                PlaylistTitle = playlistTitle
+                            });
+                        }
+                    }
+                }
+            }
+            catch { }
+
+            return videos;
+        }
+
+        public class PlaylistVideo
+        {
+            public string Url { get; set; }
+            public string Title { get; set; }
+            public string PlaylistTitle { get; set; } // pode ser null para vídeo avulso
+            public override string ToString()
+            {
+                return string.IsNullOrEmpty(PlaylistTitle) ? Title : $"[{PlaylistTitle}] {Title}";
+            }
+        }
+
+
+        // ========================= DOWNLOAD =========================
+
+
+        private async Task DownloadAllAsync(CancellationToken cancellationToken)
+        {
+            // total geral
+            int totalCount = expandedList.Count;
+
+            // construir mapa de totais por playlistKey (use "__NO_PLAYLIST__" para avulsos)
+            var playlistTotals = new Dictionary<string, int>();
+            for (int i = 0; i < expandedList.Count; i++)
+            {
+                if (expandedList[i] is PlaylistVideo pv)
+                {
+                    string key = string.IsNullOrEmpty(pv.PlaylistTitle) ? "__NO_PLAYLIST__" : pv.PlaylistTitle;
+                    if (!playlistTotals.ContainsKey(key)) playlistTotals[key] = 0;
+                    playlistTotals[key]++;
+                }
+            }
+
+            // trackers por playlist
+            var playlistProgress = playlistTotals.ToDictionary(kvp => kvp.Key, kvp => 0);
+
+            for (int i = 0; i < expandedList.Count; i++)
+            {
+                if (cancellationToken.IsCancellationRequested) break;
+
+                var video = expandedList[i] as PlaylistVideo;
+                if (video == null) continue;
+
+                // atualiza índices por playlist
+                string key = string.IsNullOrEmpty(video.PlaylistTitle) ? "__NO_PLAYLIST__" : video.PlaylistTitle;
+                playlistProgress[key]++;
+
+                int currentInPlaylist = playlistProgress[key];
+                int totalInPlaylist = playlistTotals.ContainsKey(key) ? playlistTotals[key] : 1;
+
+                ListBoxURL.SelectedIndex = i;
+
+                Invoke((MethodInvoker)(() =>
+                {
+                    // exibe progresso geral e por playlist no mesmo rótulo
+                    lblStatusContagem.Text = $"{i + 1}/{totalCount}";
+                    string playlistLabel = key == "__NO_PLAYLIST__" ? "Avulsos" : key;
+                    Status.Text = $"📥 Preparando {i + 1}/{totalCount} — [{playlistLabel} {currentInPlaylist}/{totalInPlaylist}]";
+                    progressBar.Value = 0;
+                }));
+
+                await DownloadVideoAsync(video, i + 1, totalCount, cancellationToken);
+
+                if (cancellationToken.IsCancellationRequested) break;
+            }
+        }
+
+        private async Task DownloadVideoAsync(
+    PlaylistVideo video,
+    int current,
+    int total,
+    CancellationToken cancellationToken)
+        {
+            string outputDir = txtFilePath.Text;
+
+            // Se for playlist, cria subpasta
+            if (!string.IsNullOrWhiteSpace(video.PlaylistTitle))
+            {
+                outputDir = Path.Combine(outputDir, SanitizeFileName(video.PlaylistTitle));
+                if (!Directory.Exists(outputDir))
+                    Directory.CreateDirectory(outputDir);
+            }
+
+            // ===== FORMATO ESTÁVEL (SEM HLS / SEM DASH) =====
+            string format = chkAudioOnly.Checked
+      ? "bestaudio/best"
+      : "bv*+ba/best";
+
+
+
+            string outputTemplate = Path.Combine(outputDir, "%(title)s.%(ext)s");
+
+            // ===== ARGUMENTOS LIMPOS E SEGUROS =====
+            string args =
+                $"--newline " +
+                $"--output \"{outputTemplate}\" " +
+                $"--format \"{format}\" " +
+                "--ignore-errors " +
+                "--no-warnings " +
+                "--retries 10 " +
+                "--fragment-retries 10 " +
+                "--concurrent-fragments 3 " +
+                "--user-agent \"Mozilla/5.0\" " +
+                "--referer \"https://www.youtube.com/\" " +
+             (chkAudioOnly.Checked
+    ? $"--extract-audio --audio-format mp3 --audio-quality {selectedAudioQuality}k "
+    :"--merge-output-format mp4 --embed-thumbnail --add-metadata "
+
++ $"\"{video.Url}\"");
+
+
+
+            // ffmpeg
+            if (File.Exists(ffmpegPath))
+            {
+                string ffmpegDir = Path.GetDirectoryName(ffmpegPath);
+                args += $" --ffmpeg-location \"{ffmpegDir}\"";
+            }
+
+            Invoke((MethodInvoker)(() =>
+            {
+                Status.Text = $"📥 Baixando {current}/{total}";
+                Status.BackColor = Color.RoyalBlue;
+                progressBar.Value = 0;
+                lblProgress.Text = "0%";
+            }));
+
+            var psi = new ProcessStartInfo
+            {
+                FileName = ytDlpPath,
+                Arguments = args,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true,
+                StandardOutputEncoding = Encoding.UTF8,
+                StandardErrorEncoding = Encoding.UTF8
+            };
+
+            using var process = new Process { StartInfo = psi };
+            currentProcess = process;
+
+            process.OutputDataReceived += (s, e) =>
+            {
+                if (string.IsNullOrWhiteSpace(e.Data)) return;
+
+                string line = e.Data.Trim();
+                Console.WriteLine(line);
+
+                Invoke((MethodInvoker)(() =>
+                {
+                    if (line.Contains("[download]") && line.Contains("%"))
+                    {
+                        var m = Regex.Match(line, @"(\d+(\.\d+)?)%");
+                        if (m.Success)
+                        {
+                            int percent = (int)float.Parse(m.Groups[1].Value);
+                            progressBar.Value = Math.Min(percent, 100);
+                            lblProgress.Text = percent + "%";
+                            Status.Text = $"📥 {current}/{total} - {percent}%";
+                        }
+                    }
+                    else if (line.Contains("Merging formats"))
+                    {
+                        Status.Text = "🔗 Mesclando áudio e vídeo...";
+                        Status.BackColor = Color.DarkBlue;
+                    }
+                    else if (line.Contains("Extracting audio"))
+                    {
+                        Status.Text = "🎵 Convertendo áudio...";
+                        Status.BackColor = Color.Purple;
+                    }
+                }));
+            };
+
+            process.ErrorDataReceived += (s, e) =>
+            {
+                if (!string.IsNullOrWhiteSpace(e.Data))
+                    Console.WriteLine("[ERR] " + e.Data);
+            };
+
+            try
+            {
+                process.Start();
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+
+                await process.WaitForExitAsync(cancellationToken);
+
+                if (process.ExitCode != 0)
+                    throw new Exception("Falha no download. Vídeo pode estar restrito ou indisponível.");
+
+                Invoke((MethodInvoker)(() =>
+                {
+                    progressBar.Value = 100;
+                    lblProgress.Text = "100%";
+                    Status.Text = $"✅ {current}/{total} Concluído";
+                    Status.BackColor = Color.LimeGreen;
+                }));
             }
             finally
             {
-                lblAnalisando.Visible = false;
-                HabilitarControles(true); // Reabilita controles
-                cts.Dispose();
+                currentProcess = null;
+            }
+
+            await Task.Delay(1000, cancellationToken);
+        }
+
+
+
+
+        // Método fallback para quando o formato principal falha
+        private async Task TrySimpleFallback(PlaylistVideo video, int current, int total, CancellationToken cancellationToken)
+        {
+            Console.WriteLine("Usando fallback simples...");
+
+            string outputDir = txtFilePath.Text;
+            bool isPlaylistItem = !string.IsNullOrEmpty(video.PlaylistTitle);
+
+            if (isPlaylistItem)
+            {
+                outputDir = Path.Combine(outputDir, SanitizeFileName(video.PlaylistTitle));
+            }
+
+            // FORMATO ULTRA SIMPLES - só o básico
+            string formato = "best[ext=mp4]/best";
+            string outputTemplate = Path.Combine(outputDir, "%(title)s.%(ext)s");
+
+            string args = $"--newline " +
+                          $"--output \"{outputTemplate}\" " +
+                          $"--format \"{formato}\" " +
+                          "--ignore-errors " +
+                          "--no-warnings " +
+                          "--no-check-certificates " +
+                          "--user-agent \"Mozilla/5.0\" " +
+                          "--referer \"https://www.youtube.com/\" " +
+                          (isPlaylistItem ? "--yes-playlist " : "--no-playlist ") +
+                          (chkAudioOnly.Checked
+                              ? $"--extract-audio --audio-format mp3 --audio-quality 128k "
+                              : "--merge-output-format mp4 ") +
+                          $"\"{video.Url}\"";
+
+            if (File.Exists(ffmpegPath))
+            {
+                string ffmpegDir = Path.GetDirectoryName(ffmpegPath);
+                args += $" --ffmpeg-location \"{ffmpegDir}\"";
+            }
+
+            var processInfo = new ProcessStartInfo
+            {
+                FileName = ytDlpPath,
+                Arguments = args,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true,
+                WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory
+            };
+
+            using (var process = new Process { StartInfo = processInfo })
+            {
+                await Task.Run(() => process.WaitForExit());
+
+                if (process.ExitCode != 0)
+                {
+                    throw new Exception("Fallback também falhou. O vídeo pode estar restrito.");
+                }
             }
         }
-        private async Task<bool> VerificarLinkAsync(string url)
+
+
+
+        // Método auxiliar para análise de erros
+        private string AnalyzeError(int exitCode, string log)
         {
-            // 1️⃣ Verifica se a URL é válida e usa http/https
-            if (!Uri.TryCreate(url, UriKind.Absolute, out Uri uriResult) ||
-                !(uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps))
+            Console.WriteLine($"Analyzing error: Code={exitCode}, Log length={log.Length}");
+
+            // Códigos de erro do yt-dlp
+            switch (exitCode)
+            {
+                case 1:
+                    return "Erro geral do yt-dlp. " + GetErrorDetails(log);
+                case 2:
+                    return "Processo interrompido pelo usuário ou erro de execução. " + GetErrorDetails(log);
+                case 3:
+                    return "Erro de autenticação. " + GetErrorDetails(log);
+                case 4:
+                    return "Erro de rede ou conexão. " + GetErrorDetails(log);
+                case 5:
+                    return "Erro de configuração. " + GetErrorDetails(log);
+                case 6:
+                    return "Erro de permissão. " + GetErrorDetails(log);
+                case 7:
+                    return "Erro de sistema. " + GetErrorDetails(log);
+                case 8:
+                    return "Erro de pipeline. " + GetErrorDetails(log);
+                case 100:
+                    return "Vídeo não disponível. " + GetErrorDetails(log);
+                case 101:
+                    return "Vídeo privado. " + GetErrorDetails(log);
+                case 102:
+                    return "Vídeo restrito por idade. " + GetErrorDetails(log);
+                default:
+                    return $"Erro desconhecido (código {exitCode}). " + GetErrorDetails(log);
+            }
+        }
+
+        private string GetErrorDetails(string log)
+        {
+            // Extrair mensagens de erro específicas
+            string[] lines = log.Split('\n');
+
+            foreach (string line in lines)
+            {
+                if (line.Contains("ERROR:"))
+                {
+                    return line.Replace("ERROR:", "").Trim();
+                }
+                else if (line.Contains("unable to download"))
+                {
+                    return line;
+                }
+                else if (line.Contains("HTTP Error"))
+                {
+                    return line;
+                }
+                else if (line.Contains("Video unavailable"))
+                {
+                    return "Vídeo indisponível ou removido.";
+                }
+                else if (line.Contains("Private video"))
+                {
+                    return "Vídeo privado - requer login.";
+                }
+                else if (line.Contains("Sign in"))
+                {
+                    return "Requer autenticação no YouTube.";
+                }
+            }
+
+            // Se não encontrar erro específico, retorna primeiras linhas
+            if (lines.Length > 0)
+            {
+                return $"Primeira linha: {lines[0]}";
+            }
+
+            return "Sem detalhes disponíveis.";
+        }
+
+        private string SanitizeFileName(string name)
+        {
+            foreach (char c in Path.GetInvalidFileNameChars())
+            {
+                name = name.Replace(c, '_');
+            }
+            return name;
+        }
+        private void CancelarDownload()
+        {
+            try
+            {
+                cancellationTokenSource?.Cancel();
+            }
+            catch { }
+
+            try
+            {
+                if (currentProcess != null && !currentProcess.HasExited)
+                    currentProcess.Kill();
+            }
+            catch { }
+        }
+        private async Task<bool> TestYtDlpConnectionAsync()
+        {
+            try
+            {
+                var psi = new ProcessStartInfo
+                {
+                    FileName = ytDlpPath,
+                    Arguments = "--version",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    CreateNoWindow = true
+                };
+
+                using var process = Process.Start(psi);
+                await process.WaitForExitAsync();
+
+                return process.ExitCode == 0;
+            }
+            catch
             {
                 return false;
             }
+        }
 
-            try
+
+        // ========================= HELPER PARA PAUSA/RESUME =========================
+        public static class ProcessHelper
+        {
+            [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+            private static extern IntPtr OpenThread(uint dwDesiredAccess, bool bInheritHandle, uint dwThreadId);
+
+            [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+            private static extern uint SuspendThread(IntPtr hThread);
+
+            [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+            private static extern int ResumeThread(IntPtr hThread);
+
+            [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+            private static extern bool CloseHandle(IntPtr handle);
+
+            private const uint THREAD_SUSPEND_RESUME = 0x0002;
+
+            public static void Suspend(int pid)
             {
-                // 2️⃣ Verificação rápida de acessibilidade (HTTP)
-                using (var httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(5) })
+                var process = Process.GetProcessById(pid);
+                foreach (ProcessThread pT in process.Threads)
                 {
-                    var response = await httpClient.GetAsync(uriResult);
-                    if (!response.IsSuccessStatusCode)
-                        return false; // Link não acessível
-                }
-
-                // 3️⃣ Verificação se o link é de um vídeo válido do YouTube
-                var videoData = await youtube.GetVideoAsync(url); // Usa método assíncrono (se disponível)
-
-                return videoData != null; // Retorna true se informações do vídeo forem carregadas
-            }
-            catch
-            {
-                return false; // Qualquer erro => link inválido
-            }
-        }
-
-
-        //private async void AdicionarURL()
-        //{
-        //    string url = txtUrl.Text.Trim();
-
-        //    if (string.IsNullOrEmpty(url))
-        //    {
-        //        MessageBox.Show("Por favor, insira uma URL.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //        return;
-        //    }
-
-        //    var cts = new CancellationTokenSource();
-
-        //    try
-        //    {
-        //        // Desabilitar todos os controles do formulário
-        //        HabilitarControles(false);
-
-        //        // Mostrar mensagem de análise e iniciar animação
-        //        lblAnalisando.Visible = true;
-        //        var token = cts.Token;
-        //        var animationTask = AnalisarMensagemAnimation(token); // Inicia a animação (não bloqueia a UI)
-
-        //        // Simulação da análise do link (substitua pelo seu método real de verificação)
-        //        await Task.Delay(3000); // Simula análise de 3 segundos (ou chame seu método assíncrono aqui)
-
-        //        // Verifica se a URL já foi adicionada à ListBox
-        //        if (!ListBoxURL.Items.Contains(url))
-        //        {
-        //            ListBoxURL.Items.Add(url); // Adiciona a URL
-        //            AtualizarTotalLinks();     // Atualiza total de links
-        //        }
-        //        else
-        //        {
-        //            MessageBox.Show("Este link já foi adicionado.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show("Erro ao processar a URL: " + ex.Message, "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //    }
-        //    finally
-        //    {
-        //        cts.Cancel(); // Encerra a animação
-        //        lblAnalisando.Visible = false;
-        //        HabilitarControles(true); // Reabilita os controles
-        //        cts.Dispose(); // Libera recursos
-        //    }
-        //}
-
-        private async Task AnalisarMensagemAnimation(CancellationToken token)
-        {
-            int pontos = 0;
-
-            // Atualiza o texto antes de iniciar a animação
-            lblAnalisando.Text = "Analisando";
-
-            while (!token.IsCancellationRequested)
-            {
-                pontos = (pontos + 1) % 4; // Incrementa de 0 a 3 pontos
-                lblAnalisando.Text = "Analisando" + new string('.', pontos);
-                await Task.Delay(500, token); // Aguarda 500ms ou cancela se solicitado
-            }
-        }
-
-        private void HabilitarControles(bool habilitar)
-        {
-            txtUrl.Enabled = habilitar;
-            btnAdicionarURL.Enabled = habilitar;
-            ListBoxURL.Enabled = habilitar;
-            // Inclua outros controles que precisar aqui
-        }
-
-
-        private void btnAdicionarURL_Click(object sender, EventArgs e)
-        {
-          AdicionarURL();
-        }
-        // Método para extrair o ID do vídeo do YouTube
-        private string ExtrairVideoId(string url)
-        {
-            try
-            {
-                var uri = new Uri(url);
-                var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
-
-                if (uri.Host.Contains("youtu.be"))
-                {
-                    return uri.AbsolutePath.Trim('/');
-                }
-                else if (uri.Host.Contains("youtube.com"))
-                {
-                    return query["v"]; // Obtém o parâmetro "v" da URL
+                    IntPtr pOpenThread = OpenThread(THREAD_SUSPEND_RESUME, false, (uint)pT.Id);
+                    if (pOpenThread != IntPtr.Zero)
+                    {
+                        SuspendThread(pOpenThread);
+                        CloseHandle(pOpenThread);
+                    }
                 }
             }
-            catch
+
+            public static void Resume(int pid)
             {
-                return null;
-            }
-            return null;
-        }
-        private void EmptyUrl()
-        {
-            try
-            {
-                cmbQuality.Invoke((MethodInvoker)(() => cmbQuality.Items.Clear()));
-                cmbAudioQuality.Invoke((MethodInvoker)(() => cmbAudioQuality.Items.Clear()));
-                txtTitle.Invoke((MethodInvoker)(() => txtTitle.Text = ""));
-                selectedVideoQuality = "";
-                selectedAudioQuality = "";
-            }
-            catch
-            {
-                return;
+                var process = Process.GetProcessById(pid);
+                foreach (ProcessThread pT in process.Threads)
+                {
+                    IntPtr pOpenThread = OpenThread(THREAD_SUSPEND_RESUME, false, (uint)pT.Id);
+                    if (pOpenThread != IntPtr.Zero)
+                    {
+                        while (ResumeThread(pOpenThread) > 0) ;
+                        CloseHandle(pOpenThread);
+                    }
+                }
             }
         }
-
-        public static string ByteConverter(long bytes)
+        private void cmbVideoQuality_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Sua implementação para converter bytes em uma string legível
-            // Exemplo:
-            if (bytes >= 1073741824)
-                return $"{bytes / 1073741824} GB";
-            if (bytes >= 1048576)
-                return $"{bytes / 1048576} MB";
-            if (bytes >= 1024)
-                return $"{bytes / 1024} KB";
-            return $"{bytes} bytes";
-        }
-        private void FileDelete(string pa)
-        {
-            if (File.Exists(pa))
-                File.Delete(pa);
-        }
+            if (cmbVideoQuality.SelectedItem == null) return;
 
-        private void btnDownload_Click(object sender, EventArgs e)
-        {
+            string item = cmbVideoQuality.SelectedItem.ToString();
 
-            // Inicia o download e configura os botões
-            btnAdicionarURL.Enabled = false;   // Desabilita o botão de adicionar URL
-            btnCancelar.Enabled = true;        // Habilita o botão de cancelar
-            btnPausar.Enabled = true;          // Habilita o botão de pausar
-            btnContinuar.Enabled = false;      // Desabilita o botão de continuar
-            btnDownload.Enabled = false;       // Desabilita o botão de download
+            if (item.Contains("Melhor disponível") || item.Contains("Melhor"))
+            {
+                selectedVideoQuality = "99999"; // Flag para melhor qualidade
+                Status.Text = "Qualidade: Melhor disponível (automática)";
+            }
+            else if (item.Contains("4320p"))
+            {
+                selectedVideoQuality = "4320";
+            }
+            else if (item.Contains("2160p"))
+            {
+                selectedVideoQuality = "2160";
+            }
+            else if (item.Contains("1440p"))
+            {
+                selectedVideoQuality = "1440";
+            }
+            else if (item.Contains("1080p"))
+            {
+                selectedVideoQuality = "1080";
+            }
+            else if (item.Contains("720p"))
+            {
+                selectedVideoQuality = "720";
+            }
+            else if (item.Contains("480p"))
+            {
+                selectedVideoQuality = "480";
+            }
+            else if (item.Contains("360p"))
+            {
+                selectedVideoQuality = "360";
+            }
+            else
+            {
+                // Extrai número da string (ex: "1080p (Full HD)" -> "1080")
+                var match = Regex.Match(item, @"(\d+)");
+                selectedVideoQuality = match.Success ? match.Groups[1].Value : "1080";
+            }
 
-            progressBar.Visible = true;        // Exibe a barra de progresso
-
-            // Inicia o processo de download em segundo plano
-            if (!Downloader_BackProcess.IsBusy)
-                Downloader_BackProcess.RunWorkerAsync();
-        }
-
-        private void btnCancelar_Click(object sender, EventArgs e)
-        {
-            // Cancela o download e altera os botões
-            btnCancelar.Enabled = false;   // Desabilita o botão de cancelar
-            btnPausar.Enabled = false;     // Desabilita o botão de pausar
-            btnContinuar.Enabled = false;  // Desabilita o botão de continuar
-            btnDownload.Enabled = true;    // Habilita o botão de download
-
-            cancelTokenSource.Cancel();    // Interrompe o download
-            pauseEvent.Set();              // Retoma imediatamente se o download estiver pausado
-        }
-
-        private void btnContinuar_Click(object sender, EventArgs e)
-        {
-            // Continua o download
-            btnPausar.Enabled = true;      // Habilita o botão de pausar
-            btnContinuar.Enabled = false;  // Desabilita o botão de continuar
-
-            ContinuarDownload();           // Função que retoma o download
-            ResumeDownload();              // Retoma o download pausado
-        }
-
-        private void btnPausar_Click(object sender, EventArgs e)
-        {
-            // Pausa o download
-            pauseEvent.Reset();            // Faz o download esperar
-            Status.Text = "Download pausado!";
-            Status.BackColor = System.Drawing.Color.Red;
-            btnContinuar.Enabled = true;   // Habilita o botão de continuar
-        }
-
-        private void cmbQuality_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            selectedVideoQuality = cmbQuality.SelectedItem.ToString();
+            Status.Text = $"Qualidade selecionada: {item}";
         }
 
         private void cmbAudioQuality_SelectedIndexChanged(object sender, EventArgs e)
@@ -534,770 +765,402 @@ namespace Converter
             selectedAudioQuality = cmbAudioQuality.SelectedItem.ToString();
         }
 
-        private void txtUrl_TextChanged(object sender, EventArgs e)
+
+        private async void btnAdicionarURL_Click(object sender, EventArgs e)
         {
-            if (!bgWorkerGetVideo.IsBusy)
-                bgWorkerGetVideo.RunWorkerAsync();
+            string input = txtUrl.Text.Trim();
+            if (string.IsNullOrWhiteSpace(input) || input.Contains("Enter")) return;
+
+            btnAdicionarURL.Enabled = false;
+            lblAnalisando.Visible = true;
+            lblAnalisando.Text = "Analisando link...";
+
+            try
+            {
+                // VERIFICAÇÃO SIMPLIFICADA DE PLAYLIST
+                bool isPlaylist = input.Contains("list=") || input.Contains("playlist");
+
+                if (isPlaylist)
+                {
+                    // Extrai ID da playlist
+                    var playlistMatch = Regex.Match(input, @"list=([a-zA-Z0-9_-]+)");
+                    if (playlistMatch.Success)
+                    {
+                        string playlistId = playlistMatch.Groups[1].Value;
+                        string playlistUrl = $"https://www.youtube.com/playlist?list={playlistId}";
+
+                        var resposta = MessageBox.Show(
+                            "📁 PLAYLIST DETECTADA!\n\nDeseja baixar TODA a playlist?",
+                            "Playlist Encontrada", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+
+                        if (resposta == DialogResult.Cancel) return;
+
+                        if (resposta == DialogResult.Yes)
+                        {
+                            // Adiciona URL da playlist como item especial
+                            // 🔹 obtém o nome real da playlist
+                            var info = await GetInfoAsync(playlistUrl);
+
+                            string playlistTitleReal = info.IsValid && !string.IsNullOrWhiteSpace(info.Title)
+                                ? info.Title
+                                : playlistId;
+
+                            // 🔹 EXPANDE a playlist em vídeos
+                            var videos = await GetPlaylistVideosAsync(playlistUrl);
+
+                            if (videos.Count == 0)
+                            {
+                                MessageBox.Show("Não foi possível carregar os vídeos da playlist.",
+                                    "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                return;
+                            }
+
+                            // 🔹 adiciona cada vídeo corretamente
+                            foreach (var v in videos)
+                            {
+                                expandedList.Add(new PlaylistVideo
+                                {
+                                    Url = v.Url,
+                                    Title = v.Title,
+                                    PlaylistTitle = playlistTitleReal
+                                    // cada item é UM vídeo, nunca playlist
+                                });
+
+                            }
+
+                            txtTitle.Text = $"📁 Playlist: {playlistTitleReal}";                           
+                        }
+                        else
+                        {
+                            // Extrai apenas o vídeo (remove parâmetros de playlist)
+                            var videoMatch = Regex.Match(input, @"(?:v=|youtu\.be/)([a-zA-Z0-9_-]{11})");
+                            if (videoMatch.Success)
+                            {
+                                string videoUrl = $"https://www.youtube.com/watch?v={videoMatch.Groups[1].Value}";
+                                expandedList.Add(new PlaylistVideo
+                                {
+                                    Url = videoUrl,
+                                    Title = "Vídeo único",
+                                    PlaylistTitle = null
+                                });
+
+                                txtTitle.Text = $"🎥 Vídeo único";
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // É vídeo único
+                    expandedList.Add(new PlaylistVideo
+                    {
+                        Url = input,
+                        Title = "Vídeo único",
+                        PlaylistTitle = null
+                    });
+
+                    txtTitle.Text = $"🎥 Vídeo único";
+                }
+
+                Status.Text = "✅ Adicionado à lista";
+                Status.BackColor = Color.Green;
+                AtualizarTotalLinks();
+                AtualizarBotoes();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Erro: {ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                lblAnalisando.Visible = false;
+                txtUrl.Clear();
+                txtUrl.Focus();
+                AtualizarBotoes();
+            }
         }
 
         private void btnBrowse_Click(object sender, EventArgs e)
         {
-            btnDownload.Enabled = true;  // Habilita o botão de Download após escolher a pasta
-            using (var folderDialog = new FolderBrowserDialog())
+            using var fbd = new FolderBrowserDialog();
+            if (fbd.ShowDialog() == DialogResult.OK)
+                txtFilePath.Text = fbd.SelectedPath;
+        }
+
+        private void btnLimparLista_Click(object sender, EventArgs e)
+        {
+            // Limpa o conteúdo do BindingSource (lista interna)
+            expandedList.Clear();
+
+            // Re-restabelece a ligação do ListBox ao BindingSource (garante que a ListBox mostre o conteúdo atual)
+            ListBoxURL.DataSource = null;
+            ListBoxURL.DataSource = expandedList;
+
+            // Zera labels/indicadores
+            lblStatusContagem.Text = "";
+            lblProgress.Text = "";
+            txtTitle.Text = "";
+
+            // Atualiza total/estado dos botões
+            AtualizarTotalLinks();
+            AtualizarBotoes();
+            AtualizarTotalLinks();
+            AtualizarBotoes();
+        }
+
+        private void btnExcluirSelecionados_Click(object sender, EventArgs e)
+        {
+            if (ListBoxURL.SelectedItems.Count == 0)
             {
-                if (folderDialog.ShowDialog() == DialogResult.OK)
-                    txtFilePath.Text = folderDialog.SelectedPath + "\\";
-                else
-                    txtFilePath.Text = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                MessageBox.Show("Selecione ao menos um vídeo para remover.", "Atenção",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Confirma exclusão da lista
+            var confirm = MessageBox.Show(
+                "Deseja realmente remover os itens selecionados da lista?",
+                "Remover Vídeos",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (confirm != DialogResult.Yes)
+                return;
+
+            // Coletar os itens antes de remover (evita alterar coleção durante iteração)
+            var remover = new List<PlaylistVideo>();
+
+            foreach (var item in ListBoxURL.SelectedItems)
+            {
+                if (item is PlaylistVideo pv)
+                    remover.Add(pv);
+            }
+
+            // Perguntar se deseja excluir também os arquivos baixados
+            bool excluirArquivos = false;
+
+            var respostaArquivos = MessageBox.Show(
+                "Deseja também excluir os arquivos já baixados desses vídeos?",
+                "Excluir arquivos?",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (respostaArquivos == DialogResult.Yes)
+                excluirArquivos = true;
+
+            // Remover efetivamente
+            foreach (var video in remover)
+            {
+                expandedList.Remove(video);
+
+                if (excluirArquivos)
+                {
+                    try
+                    {
+                        string pastaDownload;
+
+                        // Se for playlist, o arquivo está dentro da pasta da playlist
+                        if (!string.IsNullOrWhiteSpace(video.PlaylistTitle))
+                        {
+                            pastaDownload = Path.Combine(BaseDownloadFolder, SanitizeFileName(video.PlaylistTitle));
+                        }
+                        else
+                        {
+                            // Caso não seja playlist → raiz principal
+                            pastaDownload = BaseDownloadFolder;
+                        }
+
+                        string caminhoArquivoMp4 = Path.Combine(pastaDownload, SanitizeFileName(video.Title) + ".mp4");
+                        string caminhoArquivoMp3 = Path.Combine(pastaDownload, SanitizeFileName(video.Title) + ".mp3");
+
+                        if (File.Exists(caminhoArquivoMp4))
+                            File.Delete(caminhoArquivoMp4);
+
+                        if (File.Exists(caminhoArquivoMp3))
+                            File.Delete(caminhoArquivoMp3);
+                    }
+                    catch
+                    {
+                        // Não travar o app caso esteja em uso / bloqueado
+                    }
+                }
+            }
+
+            // Recarregar DataSource
+            ListBoxURL.DataSource = null;
+            ListBoxURL.DataSource = expandedList;
+
+            AtualizarTotalLinks();
+            AtualizarBotoes();
+
+            Status.Text = "🗑️ Itens removidos";
+            Status.BackColor = Color.DarkOrange;
+        }
+
+        private void btnContinuar_Click(object sender, EventArgs e)
+        {
+            if (!isDownloading) return;
+
+            // reseta flag
+            isPaused = false;
+            AtualizarBotoes();
+
+            if (currentProcess != null && !currentProcess.HasExited)
+            {
+                ProcessHelper.Resume(currentProcess.Id);
+                Status.Text = "▶️ CONTINUANDO";
+                Status.BackColor = Color.Orange;
             }
         }
-        void PausarDownload()
+
+        private void btnPausar_Click(object sender, EventArgs e)
         {
-            pauseEvent.Reset(); // Faz o download esperar
-            Status.Text = "Download pausado!"; Status.BackColor = System.Drawing.Color.Red;
+            if (!isDownloading) return;
+
+            // seta flag
+            isPaused = true;
+            AtualizarBotoes();
+
+            if (currentProcess != null && !currentProcess.HasExited)
+            {
+                ProcessHelper.Suspend(currentProcess.Id);
+                Status.Text = "⏸️ PAUSADO";
+                Status.BackColor = Color.Orange;
+            }
         }
 
-        private void ResumeDownload()
+        private void btnCancelar_Click(object sender, EventArgs e)
         {
-            pauseEvent.Set();  // Retoma o download
-        }
-        // Método para continuar o download
-        void ContinuarDownload()
-        {
-            pauseEvent.Set(); // Permite que o download continue
-            Status.Text = "Download retomado!"; Status.BackColor = System.Drawing.Color.Green;
+            CancelarDownload();
+            isDownloading = false;
+            isPaused = false;
+            AtualizarBotoes();
+
+            Status.Text = "⏹️ Cancelado pelo usuário";
+            Status.BackColor = Color.Red;
         }
 
-        // Método para cancelar o download
-        public void CancelarDownload()
+        private async void btnDownload_Click(object sender, EventArgs e)
         {
-            cancelToken.Cancel(); // Cancela o download
+            // ====== VALIDAÇÃO INICIAL ======
+            if (!File.Exists(ytDlpPath))
+            {
+                MessageBox.Show("yt-dlp.exe não encontrado! Coloque na pasta do programa.",
+                               "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // Testar yt-dlp
+            try
+            {
+                var testPsi = new ProcessStartInfo
+                {
+                    FileName = ytDlpPath,
+                    Arguments = "--version",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    CreateNoWindow = true
+                };
+
+                using var testProcess = Process.Start(testPsi);
+                string version = await testProcess.StandardOutput.ReadToEndAsync();
+                await testProcess.WaitForExitAsync();
+
+                Console.WriteLine($"yt-dlp version: {version}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Falha ao testar yt-dlp: {ex.Message}",
+                               "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (isDownloading || expandedList.Count == 0) return;
+
+            // ====== INICIAR DOWNLOAD ======
+            isDownloading = true;
+            isPaused = false;
+            cancellationTokenSource = new CancellationTokenSource();
+            AtualizarBotoes();
+
+            progressBar.Style = ProgressBarStyle.Continuous;
+            progressBar.Visible = true;
+            progressBar.Value = 0;
+            Status.Text = "🚀 Preparando downloads...";
+            Status.BackColor = Color.Orange;
+
+            try
+            {
+                Console.WriteLine("=== STARTING DOWNLOAD BATCH ===");
+                Console.WriteLine($"Total videos: {expandedList.Count}");
+
+                await DownloadAllAsync(cancellationTokenSource.Token);
+
+                Status.Text = "✅ TODOS OS DOWNLOADS CONCLUÍDOS!";
+                Status.BackColor = Color.LimeGreen;
+
+                System.Media.SystemSounds.Exclamation.Play();
+            }
+            catch (OperationCanceledException)
+            {
+                Status.Text = "⏹️ DOWNLOAD CANCELADO";
+                Status.BackColor = Color.Red;
+            }
+            catch (Exception ex)
+            {
+                Status.Text = $"❌ ERRO: {ex.Message.Split('\n')[0]}";
+                Status.BackColor = Color.Red;
+
+                MessageBox.Show($"Erro durante o download:\n\n{ex.Message}",
+                               "Erro no Download", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                progressBar.Visible = false;
+                isDownloading = false;
+                isPaused = false;
+                currentProcess = null;
+                AtualizarBotoes();
+
+                Console.WriteLine("=== DOWNLOAD BATCH FINISHED ===");
+            }
         }
+
         private void btnFechar_Click(object sender, EventArgs e)
         {
             this.Close();
         }
+    }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-       
-
-
-        //private void GetVideoData(string link, bool playlist = false)
-        //{
-        //    var videoData = youtube.GetAllVideos(link);
-        //    var resolution = videoData.Where(r => r.AdaptiveKind == AdaptiveKind.Video && r.Format == VideoFormat.Mp4).
-        //                               Select(r => r.Resolution);
-        //    var bitRate = videoData.Where(r => r.AdaptiveKind == AdaptiveKind.Audio).Select(r => r.AudioBitrate);
-        //    foreach (var item in resolution)
-        //    {
-        //        if (!cmbQuality.Items.Contains(item))
-        //            cmbQuality.Invoke((MethodInvoker)(() => cmbQuality.Items.Add(item)));
-        //    }
-        //    foreach (var item in bitRate)
-        //    {
-        //        if (!cmbAudioQuality.Items.Contains(item))
-        //            cmbAudioQuality.Invoke((MethodInvoker)(() => cmbAudioQuality.Items.Add(item)));
-        //    }
-
-        //    if (cmbQuality.Items.Count > 0)
-        //    {
-        //        cmbQuality.Invoke((MethodInvoker)(() => cmbQuality.Sorted = true));
-        //        cmbQuality.Invoke((MethodInvoker)(() => cmbQuality.SelectedIndex = 0));
-        //        cmbAudioQuality.Invoke((MethodInvoker)(() => cmbAudioQuality.Sorted = true));
-        //        cmbAudioQuality.Invoke((MethodInvoker)(() => cmbAudioQuality.SelectedIndex = 0));
-        //        txtTitle.Invoke((MethodInvoker)(() => txtTitle.Text = videoData.ToList()[0].Title));
-        //    }
-        //    if (playlist)
-        //        Status.Text = videoId.Count + " Videos";
-        //    else
-        //        Status.Text = "Single Video"; Status.BackColor = System.Drawing.Color.Green;
-        //}
-
-        public class VideoDownloader
+    namespace Converter
+    {
+        // ====== EXTENSÕES PARA PROCESS ======
+        public static class ProcessExtensions
         {
-            private CancellationTokenSource cancelToken = new CancellationTokenSource();
-            private ManualResetEventSlim pauseEvent = new ManualResetEventSlim(true); // Começa sem estar pausado
-            private int collctedbytes;
-            private FrmDowload _form;
-
-            // Construtor que recebe a referência do formulário
-            public VideoDownloader(FrmDowload form)
+            public static async Task WaitForExitAsync(this Process process, CancellationToken cancellationToken = default)
             {
-                _form = form;
-            }
+                var tcs = new TaskCompletionSource<bool>();
 
-            public async Task SourceDownloader(string name, YouTubeVideo vid)
-            {
-                using (var client = new HttpClient())
+                process.Exited += (sender, args) => tcs.TrySetResult(true);
+                process.EnableRaisingEvents = true;
+
+                if (process.HasExited)
                 {
-                    long? totalByte = 0;  // Inicializa a variável totalByte
-                    Stream output = null;
-
-                    try
-                    {
-                        // Cria o arquivo para gravar os dados
-                        output = new FileStream(name, FileMode.Append, FileAccess.Write, FileShare.None);
-                        long existingLength = output.Length;
-
-                        // Obter o tamanho total do arquivo
-                        using (var request = new HttpRequestMessage(HttpMethod.Head, vid.Uri))
-                        {
-                            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-                            totalByte = response.Content.Headers.ContentLength;
-                        }
-
-                        // Se totalByte for zero, usa o tamanho do arquivo existente
-                        if (totalByte == 0)
-                        {
-                            totalByte = existingLength;
-                        }
-
-                        using (var input = await client.GetStreamAsync(vid.Uri))
-                        {
-                            byte[] buffer = new byte[16 * 1024];  // Buffer de 16 KB
-                            int read;
-                            int totalRead = (int)existingLength;
-
-                            while ((read = await input.ReadAsync(buffer, 0, buffer.Length)) > 0)
-                            {
-                                // Se o cancelamento for solicitado, interrompe o download
-                                if (cancelToken.Token.IsCancellationRequested)
-                                {
-                                    break; // Sai do loop ao cancelar
-                                }
-
-                                // Aguarda até que o download seja retomado
-                                pauseEvent.Wait();
-
-                                // Escreve os dados no arquivo
-                                output.Write(buffer, 0, read);
-                                totalRead += read;
-
-                                // Atualizando os bytes coletados
-                                collctedbytes += read;
-
-                                // Calculando o progresso (percentual)
-                                int progress = totalByte > 0 ? (int)(collctedbytes * 100 / totalByte) : 0;
-
-                                // Atualizando a barra de progresso na UI
-                                _form.Invoke((MethodInvoker)(() =>
-                                {
-                                    _form.progressBar.Value = progress;  // Atualiza o valor da barra
-                                    _form.lblProgress.Text = $"{progress}%";  // Atualiza o texto da porcentagem
-                                }));
-
-                                // Atualizando a exibição de bytes baixados
-                                _form.Invoke((MethodInvoker)(() =>
-                                {
-                                    // Usando o ByteConverter do formulário para exibir os bytes baixados
-                                    _form.Dataprogress.Text = FrmDowload.ByteConverter(collctedbytes) + "/" + FrmDowload.ByteConverter(totalByte.Value);
-                                }));
-                            }
-                        }
-                    }
-                    finally
-                    {
-                        // Fecha e libera os recursos de arquivo
-                        output?.Close();
-                        output?.Dispose();
-                    }
-                }
-            }
-        }
-
-
-        async private void Downloader_BackProcess_DoWork(object sender, DoWorkEventArgs e)
-        {
-
-            totalbytes = 0;
-            collctedbytes = 0;
-            Status.Text = "Preparando downloads..."; Status.BackColor = System.Drawing.Color.Green;
-            cancelTokenSource = new CancellationTokenSource(); // Reinicia o token de cancelamento
-            CancellationToken cancelToken = cancelTokenSource.Token;
-
-            List<string> urlsParaDownload = new List<string>();
-
-            async Task SourceDownloader(string name, YouTubeVideo vid)
-            {
-                using (var client = new HttpClient())
-                {
-                    long? totalByte = 0;
-                    Stream output = null;
-                    try
-                    {
-                        output = new FileStream(name, FileMode.Append, FileAccess.Write, FileShare.None);
-                        long existingLength = output.Length;
-
-                        using (var request = new HttpRequestMessage(HttpMethod.Head, vid.Uri))
-                        {
-                            var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-                            totalByte = response.Content.Headers.ContentLength;
-                        }
-
-                        totalbytes += (long)totalByte;
-
-                        using (var input = await client.GetStreamAsync(vid.Uri))
-                        {
-                            byte[] buffer = new byte[16 * 1024];
-                            int read;
-                            int totalRead = (int)existingLength; // Ajustar para retomar o download corretamente
-
-                            while ((read = await input.ReadAsync(buffer, 0, buffer.Length)) > 0)
-                            {
-                                // Verifica se foi solicitado o cancelamento
-                                if (cancelToken.IsCancellationRequested)
-                                {
-                                    lblStatusContagem.Invoke((MethodInvoker)(() => lblStatusContagem.Text = "Download cancelado!"));
-                                    Status.Text = "Download interrompido!";
-                                    break;
-                                }
-
-                                // Verifica se o download está pausado
-                                pauseEvent.Wait(); // Espera até que o download seja retomado
-
-                                output.Write(buffer, 0, read);
-                                totalRead += read;
-                                collctedbytes += read;
-
-                                long x = totalbytes > 0 ? collctedbytes * 100 / totalbytes : 0;
-
-                                progressBar.Invoke((MethodInvoker)(() =>
-                                {
-                                    progressBar.Value = (int)x;
-                                    lblProgress.Text = $"{x}%";
-                                }));
-
-                                Dataprogress.Text = ByteConverter(collctedbytes) + "/" + ByteConverter(totalbytes);
-                            }
-                        }
-                    }
-                    finally
-                    {
-                        output?.Close();
-                        output?.Dispose();
-                    }
-
-                    if (cancelToken.IsCancellationRequested && File.Exists(name))
-                    {
-                        try
-                        {
-                            File.Delete(name);
-                        }
-                        catch (IOException ex)
-                        {
-                            lblStatusContagem.Invoke((MethodInvoker)(() => lblStatusContagem.Text = "Erro ao excluir arquivo: " + ex.Message));
-                        }
-                    }
-                }
-            }
-
-            await FFmpegDownloader.GetLatestVersion(FFmpegVersion.Full);
-
-            async Task DownloadWork(string link)
-            {
-                if (cancelTokenSource.Token.IsCancellationRequested)
-                {
-                    Status.Text = "Download cancelado!";
                     return;
                 }
 
-                Status.Text = $"Baixando: {link}";
-
-                try
+                using (cancellationToken.Register(() => tcs.TrySetCanceled()))
                 {
-                    var video = youtube.GetAllVideos(link);
-                    var targetAudio = video.FirstOrDefault(r => r.AdaptiveKind == AdaptiveKind.Audio &&
-                                                                 r.AudioBitrate.ToString() == selectedAudioQuality);
-                    var targetVideo = video.FirstOrDefault(r => r.AdaptiveKind == AdaptiveKind.Video &&
-                                                                 r.Format == VideoFormat.Mp4 &&
-                                                                 r.Resolution.ToString() == selectedVideoQuality);
-
-                    if (targetAudio == null || (chkAudioOnly.Checked != true && targetVideo == null))
-                    {
-                        MessageBox.Show("Erro ao obter vídeo/áudio. Verifique a URL.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-
-                    string cleanTitle = CleanFileName(video.FirstOrDefault()?.Title ?? "video");
-                    string videoPath = Path.Combine(txtFilePath.Text, cleanTitle + ".mp4");
-                    string audioPath = Path.Combine(txtFilePath.Text, cleanTitle + ".mp3");
-
-                    EnsureDirectoryExists(txtFilePath.Text);
-
-                    // Caminhos temporários
-                    string tempAudio = Path.Combine(txtFilePath.Text, "AudioTemp.mp4");
-                    string tempVideo = Path.Combine(txtFilePath.Text, "VideoTemp.mp4");
-
-                    // Baixa o áudio
-                    Task audioDownload = SourceDownloader(tempAudio, targetAudio);
-
-                    if (!chkAudioOnly.Checked)
-                    {
-                        // Baixa o vídeo
-                        Task videoDownload = SourceDownloader(tempVideo, targetVideo);
-
-                        await audioDownload;
-
-                        if (cancelTokenSource.Token.IsCancellationRequested)
-                        {
-                            Status.Text = "Download cancelado!";
-                            return;
-                        }
-
-                        if (File.Exists(tempAudio))
-                        {
-                            FFMpeg.ExtractAudio(tempAudio, audioPath);
-                            File.Delete(tempAudio);
-                        }
-                        else
-                        {
-                            MessageBox.Show("Erro ao baixar áudio.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
-                        }
-
-                        await videoDownload;
-
-                        if (cancelTokenSource.Token.IsCancellationRequested)
-                        {
-                            Status.Text = "Download cancelado!";
-                            return;
-                        }
-
-                        if (File.Exists(tempVideo))
-                        {
-                            FFMpeg.ReplaceAudio(tempVideo, audioPath, videoPath);
-                            File.Delete(tempVideo);
-                            File.Delete(audioPath);
-                        }
-                        else
-                        {
-                            MessageBox.Show("Erro ao baixar vídeo.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        await audioDownload;
-
-                        if (cancelTokenSource.Token.IsCancellationRequested)
-                        {
-                            Status.Text = "Download cancelado!";
-                            return;
-                        }
-
-                        if (File.Exists(tempAudio))
-                        {
-                            FFMpeg.ExtractAudio(tempAudio, audioPath);
-                            File.Delete(tempAudio);
-                        }
-                        else
-                        {
-                            MessageBox.Show("Erro ao baixar áudio.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
-                        }
-                    }
-
-                    Status.Text = "Download concluído!";
-                }
-                catch (Exception ex)
-                {
-                    if (cancelTokenSource.Token.IsCancellationRequested)
-                    {
-                        Status.Text = "Download cancelado!";
-                    }
-                    else
-                    {
-                        MessageBox.Show($"Erro durante o download: {ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        Status.Text = "Erro no download!";
-                    }
-                }
-            }
-
-            // Mudança para utilizar o ListBoxURL
-            foreach (var urlItem in ListBoxURL.Items)
-            {
-                string url = urlItem.ToString().Trim();
-                if (!string.IsNullOrWhiteSpace(url))
-                {
-                    urlsParaDownload.Add(url);
-                }
-            }
-
-            totalVideos = urlsParaDownload.Count;
-            videoAtual = 0;
-
-            foreach (var url in urlsParaDownload)
-            {
-                if (cancelToken.IsCancellationRequested)
-                {
-                    lblStatusContagem.Invoke((MethodInvoker)(() => lblStatusContagem.Text = "Download cancelado!"));
-                    Status.Text = "Download interrompido!";
-                    return;
-                }
-
-                // Encontrar o índice correspondente ao URL no ListBoxURL
-                int index = ListBoxURL.Items.IndexOf(url);
-                if (index >= 0)
-                {
-                    ListBoxURL.Invoke((MethodInvoker)(() =>
-                    {
-                        ListBoxURL.SelectedIndex = index;
-                        ListBoxURL.SelectedItem = url; // Define o item selecionado
-                    }));
-                }
-
-                videoAtual++;
-                lblStatusContagem.Invoke((MethodInvoker)(() =>
-                {
-                    lblStatusContagem.Text = $"Baixando... {videoAtual}/{totalVideos}";
-                }));
-
-                await DownloadWork(url);
-            }
-
-            lblStatusContagem.Invoke((MethodInvoker)(() =>
-            {
-                lblStatusContagem.Text = "Download concluído!";
-            }));
-            Status.Text = "Todos os downloads concluídos!";
-        }
-
-        async private Task DownloadWork(string link, bool isAudioOnly = false)
-        {
-            if (cancelTokenSource.Token.IsCancellationRequested)
-            {
-                Status.Text = "Download cancelado!";
-                return;
-            }
-
-            Status.Text = $"Baixando: {link}";
-
-            try
-            {
-                var video = youtube.GetAllVideos(link);
-                var targetAudio = video.FirstOrDefault(r => r.AdaptiveKind == AdaptiveKind.Audio);
-                var targetVideo = video.FirstOrDefault(r => r.AdaptiveKind == AdaptiveKind.Video && r.Format == VideoFormat.Mp4);
-
-                // Se o usuário selecionou baixar só o áudio
-                if (isAudioOnly)
-                {
-                    if (targetAudio == null)
-                    {
-                        MessageBox.Show("Erro: Não foi possível encontrar o áudio.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        Status.Text = "Erro ao obter áudio.";
-                        return;
-                    }
-
-                    string cleanTitle = CleanFileName(video.FirstOrDefault()?.Title ?? "audio");
-                    string audioPath = Path.Combine(txtFilePath.Text, cleanTitle + "_audio.mp4");
-
-                    EnsureDirectoryExists(txtFilePath.Text);
-
-                    if (targetAudio.Uri == null)
-                    {
-                        MessageBox.Show("Erro: URL de áudio inválida.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        Status.Text = "Erro nas URLs.";
-                        return;
-                    }
-
-                    // Baixar apenas o áudio
-                    Uri audioUri = new Uri(targetAudio.Uri); // Convertendo para Uri
-                    await DownloadFile(audioUri, audioPath);
-
-                    if (cancelTokenSource.Token.IsCancellationRequested)
-                    {
-                        Status.Text = "Download cancelado!";
-                        return;
-                    }
-
-                    Status.Text = "Download de áudio concluído!";
-                }
-                else
-                {
-                    // Se o usuário não selecionou apenas o áudio, baixar vídeo e áudio
-                    if (targetAudio == null || targetVideo == null)
-                    {
-                        MessageBox.Show("Erro ao obter vídeo/áudio. Verifique a URL.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        Status.Text = "Erro ao obter vídeo/áudio.";
-                        return;
-                    }
-
-                    string cleanTitle = CleanFileName(video.FirstOrDefault()?.Title ?? "video");
-                    string videoPath = Path.Combine(txtFilePath.Text, cleanTitle + "_video.mp4");
-                    string audioPath = Path.Combine(txtFilePath.Text, cleanTitle + "_audio.mp4");
-
-                    EnsureDirectoryExists(txtFilePath.Text);
-
-                    if (targetVideo.Uri == null || targetAudio.Uri == null)
-                    {
-                        MessageBox.Show("Erro: URL de vídeo ou áudio inválida.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        Status.Text = "Erro nas URLs.";
-                        return;
-                    }
-
-                    // Baixar vídeo e áudio separadamente
-                    Uri videoUri = new Uri(targetVideo.Uri); // Convertendo para Uri
-                    Uri audioUri = new Uri(targetAudio.Uri); // Convertendo para Uri
-                    await DownloadFile(videoUri, videoPath);
-                    await DownloadFile(audioUri, audioPath);
-
-                    if (cancelTokenSource.Token.IsCancellationRequested)
-                    {
-                        Status.Text = "Download cancelado!";
-                        return;
-                    }
-
-                    // Combinar vídeo e áudio usando FFmpeg
-                    string outputPath = Path.Combine(txtFilePath.Text, cleanTitle + ".mp4");
-                    CombineVideoAndAudio(videoPath, audioPath, outputPath);
-
-                    // Excluir arquivos temporários de vídeo e áudio
-                    File.Delete(videoPath);
-                    File.Delete(audioPath);
-
-                    Status.Text = "Download de vídeo e áudio concluído!";
-                }
-            }
-            catch (Exception ex)
-            {
-                if (cancelTokenSource.Token.IsCancellationRequested)
-                {
-                    Status.Text = "Download cancelado!";
-                }
-                else
-                {
-                    MessageBox.Show($"Erro durante o download: {ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Status.Text = "Erro no download!";
+                    await tcs.Task;
                 }
             }
         }
+        // ====== FIM DAS EXTENSÕES ======
 
-
-
-        async private Task DownloadFile(Uri fileUri, string outputPath)
+        public partial class FrmDowload : Form
         {
-            try
-            {
-                using (var client = new HttpClient())
-                {
-                    // Inicia o download
-                    using (var response = await client.GetAsync(fileUri, HttpCompletionOption.ResponseHeadersRead))
-                    {
-                        response.EnsureSuccessStatusCode(); // Lança uma exceção se o status não for sucesso
-
-                        // Abertura do fluxo para escrever os dados no arquivo
-                        using (var inputStream = await response.Content.ReadAsStreamAsync())
-                        {
-                            using (var outputStream = new FileStream(outputPath, FileMode.Create, FileAccess.Write))
-                            {
-                                // Copiar o conteúdo do fluxo de entrada para o fluxo de saída
-                                await inputStream.CopyToAsync(outputStream);
-                            }
-                        }
-                    }
-                }
-            }
-            catch (HttpRequestException httpEx)
-            {
-                // Erro relacionado à requisição HTTP
-                MessageBox.Show($"Erro de rede: {httpEx.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            catch (IOException ioEx)
-            {
-                // Erro relacionado ao fluxo de dados ou ao arquivo
-                MessageBox.Show($"Erro ao gravar o arquivo: {ioEx.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            catch (Exception ex)
-            {
-                // Captura de outros erros gerais
-                MessageBox.Show($"Erro durante o download: {ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-
-        private void CombineVideoAndAudio(string videoPath, string audioPath, string outputPath)
-        {
-            // Usando FFmpeg para combinar o vídeo e o áudio
-            string ffmpegPath = @"C:\path\to\ffmpeg.exe"; // Substitua pelo caminho correto do FFmpeg no seu sistema
-            string arguments = $"-i \"{videoPath}\" -i \"{audioPath}\" -c:v copy -c:a aac -strict experimental \"{outputPath}\"";
-
-            var process = new System.Diagnostics.Process();
-            process.StartInfo.FileName = ffmpegPath;
-            process.StartInfo.Arguments = arguments;
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.RedirectStandardError = true;
-
-            process.Start();
-            process.WaitForExit();
-        }
-
-
-        //private void bgWorkerGetVideo_DoWork(object sender, DoWorkEventArgs e)
-        //{
-        //      if (InvokeRequired)
-        //    {
-        //        Invoke(new MethodInvoker(() => bgWorkerGetVideo_DoWork(sender, e)));
-        //        return;
-        //    }
-
-        //    // Evita erro se o txtUrl não existir ainda
-        //    if (txtUrl == null || string.IsNullOrEmpty(txtUrl.Text))
-        //    {
-        //        return; // Se não há URL, não há o que processar
-        //    }
-
-        //    videoId.Clear();
-
-        //    // Atualizar Status na UI thread
-        //    if (this.InvokeRequired)
-        //    {
-        //        this.Invoke(new MethodInvoker(() =>
-        //        {
-        //            Status.ForeColor = System.Drawing.Color.Black;
-        //            Status.Text = "Processing link...";
-        //        }));
-        //    }
-        //    else
-        //    {
-        //        Status.ForeColor = System.Drawing.Color.Black;
-        //        Status.Text = "Processing link...";
-        //    }
-
-        //    try
-        //    {
-        //        Match m = listreg.Match(txtUrl.Text);
-        //        if (m.Success)
-        //        {
-        //            string listId = m.Groups[1].Value;
-        //            using (var client = new WebClient())
-        //            {
-        //                var responseString = client.DownloadString(txtUrl.Text);
-        //                string re2 = "\"videoId\":\"([A-z0-9-]+)\",\"playlistId\":\"" + listId + "\"";
-        //                Regex listOfVideos = new Regex(re2);
-        //                foreach (Match ma in listOfVideos.Matches(responseString))
-        //                {
-        //                    videoId.Add(ma.Groups[1].Value);
-        //                }
-        //                if (videoId.Count > 0)
-        //                    GetVideoData(watchLink + videoId.ElementAt(0), true);
-        //            }
-        //        }
-        //        else
-        //        {
-        //            GetVideoData(txtUrl.Text);
-        //        }
-        //    }
-        //    catch
-        //    {
-        //        EmptyUrl();
-
-        //        // Atualizar Status na UI thread em caso de erro
-        //        if (this.InvokeRequired)
-        //        {
-        //            this.Invoke(new MethodInvoker(() =>
-        //            {
-        //                Status.ForeColor = System.Drawing.Color.Red;
-        //                Status.Text = "Invalid Link";
-        //            }));
-        //        }
-        //    }
-        //}
-        private void bgWorkerGetVideo_DoWork(object sender, DoWorkEventArgs e)
-        {
-            AtualizarStatus("Processing link...", System.Drawing.Color.Black);
-
-            if (txtUrl == null || string.IsNullOrEmpty(txtUrl.Text))
-                return;
-
-            videoId.Clear();
-
-            try
-            {
-                Match m = listreg.Match(txtUrl.Text);
-                if (m.Success)
-                {
-                    string listId = m.Groups[1].Value;
-                    using (var client = new WebClient())
-                    {
-                        var responseString = client.DownloadString(txtUrl.Text);
-                        string re2 = $"\"videoId\":\"([A-Za-z0-9-]+)\",\"playlistId\":\"{listId}\"";
-                        Regex listOfVideos = new Regex(re2);
-
-                        foreach (Match ma in listOfVideos.Matches(responseString))
-                        {
-                            videoId.Add(ma.Groups[1].Value);
-                        }
-
-                        if (videoId.Count > 0)
-                            GetVideoData(watchLink + videoId.ElementAt(0), true);
-                    }
-                }
-                else
-                {
-                    GetVideoData(txtUrl.Text); // Vídeo único
-                }
-            }
-            catch
-            {
-                EmptyUrl();
-                AtualizarStatus("Invalid Link", System.Drawing.Color.Red);
-            }
-        }
-
-        private void AtualizarStatus(string mensagem, System.Drawing.Color cor)
-        {
-            if (statusStrip1.InvokeRequired)
-            {
-                statusStrip1.Invoke(new MethodInvoker(() =>
-                {
-                    Status.ForeColor = cor;
-                    Status.Text = mensagem;
-                }));
-            }
-            else
-            {
-                Status.ForeColor = cor;
-                Status.Text = mensagem;
-            }
-        }
-
-
-        private void btnLimparLista_Click(object sender, EventArgs e)
-        {
-            ListBoxURL.Items.Clear();
-            mediaPaths.Clear();        
-            txtTitle.Text = "";
-            cmbQuality.Items.Clear();
-            cmbAudioQuality.Items.Clear();
-            txtUrl.Focus();
-        }
-
-        private void txtUrl_Click(object sender, EventArgs e)
-        {
-            txtUrl.BackColor = System.Drawing.Color.YellowGreen;
-        }
-
-        private void txtUrl_Leave(object sender, EventArgs e)
-        {
-            txtUrl.BackColor = System.Drawing.Color.White;
-        }
-
-        private void txtUrl_Enter(object sender, EventArgs e)
-        {
-            txtUrl.BackColor = System.Drawing.Color.YellowGreen;
+            // ... resto do código da classe FrmDowload
         }
     }
 }

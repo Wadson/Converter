@@ -5,29 +5,37 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using ComponentFactory.Krypton.Toolkit;
-using FFMpegCore;
 using NReco.VideoConverter;
-//using NReco.VideoInfo;
+using System.Drawing;
 
 namespace Converter
 {
-    public partial class FrmCompressMpTreis : KryptonForm
+    public partial class FrmCompressMpTreis : Form
     {
         private List<string> mediaPaths = new List<string>();
         private string outputFolder;
         private BackgroundWorker worker;
         private bool cancelRequested = false;
 
+        private ManualResetEvent pauseEvent = new ManualResetEvent(true);
+        private bool isPaused = false;
+
         public FrmCompressMpTreis()
         {
             InitializeComponent();
             lblTotalVideos.Text = "Total de arquivos: 0";
             btnCancelar.Enabled = false;
+            btnPausar.Enabled = false;
+            btnContinuar.Enabled = false;
 
             // Níveis de compressão para MP3
             cmbNivelCompressao.Items.AddRange(new object[] { "32", "64", "80", "128", "256" });
             cmbNivelCompressao.SelectedIndex = 3; // Padrão: 128kbps
+
+            // Pasta padrão "Músicas"
+            outputFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic);
+            txtSalvarEm.Text = outputFolder;
+
         }
 
         private void ToggleControls(bool enabled)
@@ -37,7 +45,23 @@ namespace Converter
             btnConverter.Enabled = enabled;
             txtSalvarEm.Enabled = enabled;
             cmbNivelCompressao.Enabled = enabled;
-            btnCancelar.Enabled = !enabled;
+            btnRemoverSelecionados.Enabled = enabled;
+            btnLimparLista.Enabled = enabled;
+
+            if (!enabled)
+            {
+                // INICIANDO COMPRESSÃO
+                btnCancelar.Enabled = true;
+                btnPausar.Enabled = true;
+                btnContinuar.Enabled = false;
+            }
+            else
+            {
+                // COMPRESSÃO TERMINADA/CANCELADA
+                btnCancelar.Enabled = false;
+                btnPausar.Enabled = false;
+                btnContinuar.Enabled = false;
+            }
         }
 
         private void btnFechar_Click(object sender, EventArgs e)
@@ -63,6 +87,12 @@ namespace Converter
             if (worker != null && worker.IsBusy)
             {
                 cancelRequested = true;
+                isPaused = false;
+                pauseEvent.Set(); // Libera a thread se estiver pausada
+
+                btnPausar.Enabled = false;
+                btnContinuar.Enabled = false;
+
                 worker.CancelAsync();
                 lblStatus.Text = "Cancelando...";
             }
@@ -70,14 +100,13 @@ namespace Converter
 
         private void ComprimirMpTreis()
         {
-
             if (mediaPaths.Count == 0 || string.IsNullOrEmpty(outputFolder))
             {
-                MessageBox.Show("Adicione arquivos e escolha um diretório de saída antes de converter.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Adicione arquivos e escolha um diretório de saída antes de comprimir.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            if (cmbNivelCompressao.SelectedItem == null || !int.TryParse(cmbNivelCompressao.SelectedItem.ToString(), out int bitrate))
+            if (cmbNivelCompressao.SelectedItem == null || !int.TryParse(cmbNivelCompressao.SelectedItem.ToString(), out int bitrate) || bitrate <= 0)
             {
                 MessageBox.Show("Selecione um nível de compressão válido.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -91,12 +120,17 @@ namespace Converter
                 return;
             }
 
+            // Obter bitrate ANTES de iniciar thread
+            int selectedBitrate = bitrate;
+
             ToggleControls(false);
             progressBar.Maximum = mp3Files.Count;
             progressBar.Value = 0;
             lblStatus.Text = "Iniciando compressão...";
             lblProgress.Text = "0%";
             cancelRequested = false;
+            isPaused = false;
+            pauseEvent.Set();
 
             worker = new BackgroundWorker
             {
@@ -106,54 +140,64 @@ namespace Converter
 
             worker.DoWork += (s, ev) =>
             {
-                var converter = new FFMpegConverter();
+                var converter = new FFMpegConverter(); // DESCOMENTADO
+
                 for (int i = 0; i < mp3Files.Count; i++)
                 {
-                    if (cancelRequested)
+                    // Verificar cancelamento
+                    if (cancelRequested || worker.CancellationPending)
                     {
                         ev.Cancel = true;
                         return;
                     }
 
+                    // Verificar pausa
+                    pauseEvent.WaitOne();
+
                     string filePath = mp3Files[i];
                     string fileName = Path.GetFileNameWithoutExtension(filePath);
-                    string compressedFilePath = Path.Combine(outputFolder, fileName + "_compressed.mp3");
+
+                    // Nome do arquivo comprimido
+                    string compressedFileName = $"{fileName}_{selectedBitrate}kbps.mp3";
+                    string compressedFilePath = Path.Combine(outputFolder, compressedFileName);
 
                     worker.ReportProgress(i + 1, fileName);
 
                     try
                     {
+                        // Verificar se arquivo de entrada existe
+                        if (!File.Exists(filePath))
+                        {
+                            continue;
+                        }
+
+                        // Comprimir MP3 - configurações corretas
                         var audioSettings = new ConvertSettings
                         {
-                            CustomOutputArgs = $"-b:a {bitrate}k -acodec libmp3lame"
+                            CustomOutputArgs = $"-codec:a libmp3lame -b:a {selectedBitrate}k -ac 2"
                         };
 
+                        // Executar compressão
                         converter.ConvertMedia(filePath, null, compressedFilePath, "mp3", audioSettings);
 
+                        // Verificar se arquivo foi criado
                         if (File.Exists(compressedFilePath))
                         {
-                            Thread.Sleep(500); // Pequeno delay para garantir que o sistema finalize o processo
-
-                            string finalPath = Path.Combine(outputFolder, fileName + "_compressed.mp3");
-                            File.Move(compressedFilePath, finalPath);
-
-                            if (File.Exists(finalPath))
-                            {
-                                Console.WriteLine($"Arquivo \"{fileName}\" compactado com sucesso!");
-                            }
-                            else
-                            {
-                                MessageBox.Show($"Erro ao mover o arquivo compactado \"{fileName}\".", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            }
-                        }
-                        else
-                        {
-                            MessageBox.Show($"Falha ao comprimir \"{fileName}\". O arquivo de saída não foi criado.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            // Pequena pausa para sistema processar
+                            Thread.Sleep(100);
                         }
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Erro ao comprimir \"{fileName}\": {ex.Message}", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        // Usar Invoke para mensagens na thread UI
+                        string errorMsg = ex.Message;
+                        this.Invoke((MethodInvoker)delegate {
+                            MessageBox.Show($"Erro ao comprimir \"{fileName}\": {errorMsg}",
+                                            "Erro na compressão",
+                                            MessageBoxButtons.OK,
+                                            MessageBoxIcon.Error);
+                        });
+                        continue;
                     }
                 }
             };
@@ -161,14 +205,17 @@ namespace Converter
             worker.ProgressChanged += (s, ev) =>
             {
                 progressBar.Value = ev.ProgressPercentage;
-                lblStatus.Text = $"Processando {ev.UserState} ({ev.ProgressPercentage}/{mp3Files.Count})";
+                if (!isPaused)
+                {
+                    lblStatus.Text = $"Processando {ev.UserState} ({ev.ProgressPercentage}/{mp3Files.Count})";
+                }
                 lblProgress.Text = $"{(ev.ProgressPercentage * 100 / mp3Files.Count):0}%";
 
                 int index = ev.ProgressPercentage - 1;
                 if (index >= 0 && index < listBoxVideos.Items.Count)
                 {
                     listBoxVideos.SelectedIndex = index;
-                    listBoxVideos.TopIndex = index;
+                    listBoxVideos.TopIndex = Math.Max(0, index - 5);
                 }
             };
 
@@ -182,32 +229,44 @@ namespace Converter
                 else
                 {
                     lblStatus.Text = "Processo concluído!";
-                    MessageBox.Show("Compressão finalizada!", "Sucesso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"Compressão finalizada! Arquivos salvos em:\n{outputFolder}",
+                                   "Sucesso",
+                                   MessageBoxButtons.OK,
+                                   MessageBoxIcon.Information);
                 }
 
                 lblProgress.Text = "100%";
+                progressBar.Value = progressBar.Maximum;
+
+                // Restaurar controles
                 ToggleControls(true);
+
+                // Resetar estado de pausa
+                isPaused = false;
+                pauseEvent.Set();
             };
 
             worker.RunWorkerAsync();
         }
         private void btnConverter_Click(object sender, EventArgs e)
         {
-          ComprimirMpTreis();
+            ComprimirMpTreis();
+        }
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+
+            if (worker != null && worker.IsBusy)
+            {
+                cancelRequested = true;
+                isPaused = false;
+                pauseEvent.Set();
+                worker.CancelAsync();
+            }
+
+            pauseEvent?.Dispose();
         }
 
-        private bool HasAudioTrack(string videoPath)
-        {
-            try
-            {
-                var videoInfo = FFProbe.Analyse(videoPath);
-                return videoInfo.AudioStreams.Any(s => s != null);
-            }
-            catch
-            {
-                return false;
-            }
-        }
 
         private void btnLimparLista_Click(object sender, EventArgs e)
         {
@@ -240,7 +299,7 @@ namespace Converter
                 if (!mediaPaths.Contains(file))
                 {
                     mediaPaths.Add(file);
-                    listBoxVideos.Items.Add(file);
+                    listBoxVideos.Items.Add(Path.GetFileName(file)); // SÓ NOME, NÃO CAMINHO
                 }
             }
             lblTotalVideos.Text = $"Total de arquivos: {mediaPaths.Count}";
@@ -263,6 +322,61 @@ namespace Converter
         private void txtSalvarEm_TextChanged(object sender, EventArgs e)
         {
             outputFolder = txtSalvarEm.Text;
+        }
+
+        private void btnPausar_Click(object sender, EventArgs e)
+        {
+            if (worker != null && worker.IsBusy)
+            {
+                isPaused = true;
+                pauseEvent.Reset(); // Bloqueia a thread
+                btnPausar.Enabled = false;
+                btnContinuar.Enabled = true;
+                btnCancelar.Enabled = false;
+                lblStatus.Text = "Compressão pausada...";
+            }
+        }
+
+        private void btnContinuar_Click(object sender, EventArgs e)
+        {
+            if (isPaused)
+            {
+                isPaused = false;
+                pauseEvent.Set(); // Libera a thread
+                btnPausar.Enabled = true;
+                btnContinuar.Enabled = false;
+                btnCancelar.Enabled = true;
+                lblStatus.Text = "Continuando compressão...";
+            }
+        }
+
+        private void btnRemoverSelecionados_Click(object sender, EventArgs e)
+        {
+            if (worker != null && worker.IsBusy) return;
+
+            if (listBoxVideos.SelectedItems.Count > 0)
+            {
+                var selectedItems = new List<object>();
+                foreach (var item in listBoxVideos.SelectedItems)
+                {
+                    selectedItems.Add(item);
+                }
+
+                foreach (var item in selectedItems)
+                {
+                    // Encontrar o caminho completo correspondente ao nome exibido
+                    string fileName = item.ToString();
+                    string fullPath = mediaPaths.FirstOrDefault(p => Path.GetFileName(p) == fileName);
+
+                    if (fullPath != null)
+                    {
+                        listBoxVideos.Items.Remove(item);
+                        mediaPaths.Remove(fullPath);
+                    }
+                }
+
+                lblTotalVideos.Text = $"Total de arquivos: {mediaPaths.Count}";
+            }
         }
     }
 }

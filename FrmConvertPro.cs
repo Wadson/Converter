@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
-using ComponentFactory.Krypton.Toolkit;
-using FFMpegCore;
-using NReco.VideoConverter;
+using Krypton.Toolkit;
+
+//using NReco.VideoConverter;
 //using NReco.VideoInfo;
 
 namespace Converter
