@@ -1,5 +1,5 @@
 {
-  "versao": "2.5.1",
-  "url": "https://github.com/Wadson/Converter/releases/download/ConvertProv2.5.1/ConvertPro_Setup_2.5.1.exe",
-  "descricao": "Incremento da opção de download de Thumbinail, Versão 2.5.1 final"
+  "versao": "2.6.0",
+  "url": "https://github.com/Wadson/Converter/releases/download/ConvertProv2.6.0/ConvertPro_Setup_2.6.0.exe",
+  "descricao": "Mudança de plataforma de Windows Form para NET MAUI Dot Net 10.0, Versão 2.6.0 final"
 }
