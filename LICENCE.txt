@@ -1,0 +1,42 @@
+===============================================================================
+                       LICENÇA DE USO - CONVERT PRO
+===============================================================================
+
+Copyright (c) 2026 WR Soft Serviços Online. Todos os direitos reservados.
+Contato: wadsonsoft@gmail.com
+
+-------------------------------------------------------------------------------
+1. CONCESSÃO DE LICENÇA
+-------------------------------------------------------------------------------
+O software Convert Pro ("Software") é fornecido estritamente para USO PESSOAL
+E NÃO COMERCIAL. 
+
+Esta licença concede ao usuário o direito de instalar e utilizar o Software em
+dispositivos de uso pessoal para as seguintes finalidades:
+  - Download de vídeos e mídias da plataforma YouTube;
+  - Compressão de arquivos de áudio em múltiplos formatos;
+  - Conversão de arquivos de vídeo em múltiplos formatos de áudio e vídeo.
+
+-------------------------------------------------------------------------------
+2. RESTRIÇÕES DE USO
+-------------------------------------------------------------------------------
+O usuário NÃO está autorizado a:
+  - Vender, alugar, sublicenciar, redistribuir ou comercializar este Software;
+  - Reproduzir, distribuir ou disponibilizar este Software em larga escala;
+  - Modificar, descompilar, realizar engenharia reversa ou criar obras 
+    derivadas com base neste Software sem autorização prévia por escrito.
+
+-------------------------------------------------------------------------------
+3. ISENÇÃO DE RESPONSABILIDADE
+-------------------------------------------------------------------------------
+O Software é fornecido "no estado em que se encontra" (AS IS), sem garantias
+de qualquer tipo, expressas ou implícitas. 
+
+O usuário assume total responsabilidade pelo uso do aplicativo e pelo cumprimento
+dos Termos de Serviço de terceiros (incluindo as diretrizes do YouTube) e pelas
+leis de direitos autorais aplicáveis ao conteúdo baixado ou convertido.
+
+===============================================================================
+Desenvolvido por WR Soft Serviços Online
+Contato: wadsonsoft@gmail.com
+===============================================================================

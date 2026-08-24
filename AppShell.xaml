@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell x:Class="ConverPro.AppShell" xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+ Title="ConverPro" FlyoutBehavior="Locked" FlyoutBackgroundColor="#172033" FlyoutWidth="280">
+ <Shell.ItemTemplate>
+  <DataTemplate x:DataType="ShellItem">
+   <Border x:Name="ItemBorder" Margin="12,2" Padding="12,7" WidthRequest="244" HeightRequest="44" HorizontalOptions="Fill" StrokeThickness="0" BackgroundColor="Transparent" StrokeShape="RoundRectangle 9">
+    <Border.Triggers><DataTrigger TargetType="Border" Binding="{Binding IsChecked}" Value="True"><Setter Property="BackgroundColor" Value="#27365A"/></DataTrigger></Border.Triggers>
+    <Grid ColumnDefinitions="3,22,*" ColumnSpacing="11">
+     <BoxView Color="#60A5FA" CornerRadius="2" Opacity="0" WidthRequest="3" HeightRequest="24" VerticalOptions="Center"><BoxView.Triggers><DataTrigger TargetType="BoxView" Binding="{Binding IsChecked}" Value="True"><Setter Property="Opacity" Value="1"/></DataTrigger></BoxView.Triggers></BoxView>
+     <Image Grid.Column="1" Source="{Binding FlyoutIcon}" WidthRequest="20" HeightRequest="20" Opacity="1" VerticalOptions="Center"/>
+     <Label Grid.Column="2" Text="{Binding Title}" TextColor="#F8FAFC" FontFamily="OpenSansSemibold" FontSize="14" VerticalOptions="Center" LineBreakMode="NoWrap"/>
+    </Grid>
+    <VisualStateManager.VisualStateGroups>
+     <VisualStateGroup x:Name="CommonStates">
+      <VisualState x:Name="Normal"/>
+      <VisualState x:Name="Selected"><VisualState.Setters><Setter Property="BackgroundColor" Value="#27365A"/></VisualState.Setters></VisualState>
+      <VisualState x:Name="PointerOver"><VisualState.Setters><Setter Property="BackgroundColor" Value="#27344C"/></VisualState.Setters></VisualState>
+     </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
+   </Border>
+  </DataTemplate>
+ </Shell.ItemTemplate>
+ <Shell.FlyoutHeader><Grid Padding="24,28,20,20" RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="44,*">
+  <Image Source="app_logo.png" WidthRequest="36" HeightRequest="36" VerticalOptions="Center"/>
+  <Label Grid.Column="1" Text="CONVERPRO" TextColor="White" FontSize="21" FontAttributes="Bold" VerticalOptions="Center"/>
+  <Label Grid.Row="1" Grid.ColumnSpan="2" Text="Vídeo e áudio sem complicação" TextColor="#94A3B8" FontSize="12" Margin="0,8,0,0"/>
+  <Label x:Name="VersionLabel" Grid.Row="2" Grid.ColumnSpan="2" TextColor="#64748B" FontSize="11" Margin="0,4,0,0"/>
+ </Grid></Shell.FlyoutHeader>
+</Shell>
