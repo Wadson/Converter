@@ -17,7 +17,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ConverPro")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("2.7.1")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("2.7.1")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("2.7.1+9f6c8526f4e7e9d26bab743924c6e40b0477254d")]
 [assembly: System.Reflection.AssemblyProductAttribute("ConverPro")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ConverPro")]
 [assembly: System.Reflection.AssemblyVersionAttribute("2.7.1")]

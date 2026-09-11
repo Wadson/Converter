@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "ORpUXnjrtDs=",
+  "dgSpecHash": "e6cgEHd1Mt8=",
   "success": true,
   "projectFilePath": "D:\\Projetos\\Converter\\ConverPro.csproj",
   "expectedPackageFiles": [
@@ -33,10 +33,6 @@
     "C:\\Users\\WRSoft\\.nuget\\packages\\microsoft.windows.sdk.buildtools\\10.0.22621.756\\microsoft.windows.sdk.buildtools.10.0.22621.756.nupkg.sha512",
     "C:\\Users\\WRSoft\\.nuget\\packages\\microsoft.windowsappsdk\\1.7.250909003\\microsoft.windowsappsdk.1.7.250909003.nupkg.sha512",
     "C:\\Users\\WRSoft\\.nuget\\packages\\youtubeexplode\\6.6.1\\youtubeexplode.6.6.1.nupkg.sha512",
-    "C:\\Users\\WRSoft\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\10.0.11\\microsoft.netcore.app.runtime.win-x64.10.0.11.nupkg.sha512",
-    "C:\\Users\\WRSoft\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\10.0.11\\microsoft.windowsdesktop.app.runtime.win-x64.10.0.11.nupkg.sha512",
-    "C:\\Users\\WRSoft\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\10.0.11\\microsoft.aspnetcore.app.runtime.win-x64.10.0.11.nupkg.sha512",
-    "C:\\Users\\WRSoft\\.nuget\\packages\\microsoft.netcore.app.crossgen2.win-x64\\10.0.11\\microsoft.netcore.app.crossgen2.win-x64.10.0.11.nupkg.sha512",
     "C:\\Users\\WRSoft\\.nuget\\packages\\microsoft.windows.sdk.net.ref\\10.0.19041.57\\microsoft.windows.sdk.net.ref.10.0.19041.57.nupkg.sha512"
   ],
   "logs": []
