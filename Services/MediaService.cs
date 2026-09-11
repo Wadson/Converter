@@ -10,7 +10,10 @@ public sealed class MediaService(ToolLocator tools, ProcessRunner runner)
         var youtubeTools = await tools.EnsureYoutubeToolsAsync(progress, cancellationToken);
         var ytdlp = youtubeTools.YtDlp;
         Directory.CreateDirectory(options.OutputDirectory);
-        var args = new List<string> { "--newline", "--windows-filenames", "--remote-components", "ejs:github", "-P", options.OutputDirectory };
+        var before = Directory.Exists(options.OutputDirectory)
+            ? Directory.EnumerateFiles(options.OutputDirectory, "*", SearchOption.TopDirectoryOnly).ToHashSet(StringComparer.OrdinalIgnoreCase)
+            : [];
+        var args = new List<string> { "--newline", "--no-playlist", "--windows-filenames", "--remote-components", "ejs:github", "-P", options.OutputDirectory };
         if (youtubeTools.Deno is not null)
             args.AddRange(["--js-runtimes", $"deno:{youtubeTools.Deno}"]);
         var ffmpeg = tools.Find("ffmpeg.exe");
@@ -30,6 +33,9 @@ public sealed class MediaService(ToolLocator tools, ProcessRunner runner)
 
         args.Add(url);
         await runner.RunAsync(ytdlp, args, progress, cancellationToken);
+        var produced = Directory.EnumerateFiles(options.OutputDirectory, "*", SearchOption.TopDirectoryOnly)
+            .Where(path => !before.Contains(path) && new FileInfo(path).Length > 0 && !IsPartial(path)).ToList();
+        if (produced.Count == 0) throw new InvalidDataException("O yt-dlp terminou, mas não produziu um arquivo final válido.");
     }
 
     public Task ConvertToAudioAsync(string input, string outputDirectory, string format, string bitrate,
@@ -84,4 +90,7 @@ public sealed class MediaService(ToolLocator tools, ProcessRunner runner)
         for (var index = 2; File.Exists(candidate); index++) candidate = Path.Combine(directory, $"{name} ({index}).{extension}");
         return candidate;
     }
+
+    private static bool IsPartial(string path) => new[] { ".part", ".ytdl", ".tmp", ".temp" }
+        .Contains(Path.GetExtension(path), StringComparer.OrdinalIgnoreCase);
 }

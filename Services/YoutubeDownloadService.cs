@@ -19,8 +19,8 @@ public sealed class YoutubeDownloadService(YoutubeClient youtube, MediaService m
 
         PlaylistId? playlist = null;
         VideoId? video = null;
-        try { playlist = PlaylistId.TryParse(url); } catch { }
-        try { video = VideoId.TryParse(url); } catch { }
+        playlist = PlaylistId.TryParse(url);
+        video = VideoId.TryParse(url);
         return new(playlist is not null, playlist?.Value, video?.Value);
     }
 
@@ -28,15 +28,21 @@ public sealed class YoutubeDownloadService(YoutubeClient youtube, MediaService m
     {
         var playlist = await youtube.Playlists.GetAsync(playlistId, token);
         var items = new List<MediaQueueItem>();
+        var ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         await foreach (var video in youtube.Playlists.GetVideosAsync(playlistId, token))
-            items.Add(new MediaQueueItem(video.Url, video.Title));
+        {
+            token.ThrowIfCancellationRequested();
+            var id = VideoId.TryParse(video.Url)?.Value;
+            if (id is not null && ids.Add(id)) items.Add(new MediaQueueItem(CanonicalVideoUrl(id), video.Title));
+        }
+        if (items.Count == 0) throw new InvalidOperationException("A playlist não contém vídeos disponíveis.");
         return new(Sanitize(playlist.Title), items);
     }
 
     public async Task<MediaQueueItem> GetVideoAsync(string url, CancellationToken token)
     {
         var video = await youtube.Videos.GetAsync(url, token);
-        return new(video.Url, video.Title);
+        return new(CanonicalVideoUrl(video.Id.Value), video.Title);
     }
 
     public async Task DownloadAsync(MediaQueueItem item, MediaOptions options,
@@ -53,5 +59,7 @@ public sealed class YoutubeDownloadService(YoutubeClient youtube, MediaService m
         var result = new string(value.Select(c => invalid.Contains(c) ? '_' : c).ToArray()).Trim().TrimEnd('.');
         return string.IsNullOrWhiteSpace(result) ? "YouTube" : result;
     }
+
+    public static string CanonicalVideoUrl(string videoId) => $"https://www.youtube.com/watch?v={Uri.EscapeDataString(videoId)}";
 
 }

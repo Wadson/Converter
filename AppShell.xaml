@@ -21,7 +21,7 @@
   </DataTemplate>
  </Shell.ItemTemplate>
  <Shell.FlyoutHeader><Grid Padding="24,28,20,20" RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="44,*">
-  <Image Source="app_logo.png" WidthRequest="36" HeightRequest="36" VerticalOptions="Center"/>
+  <Image Source="appicon_menu.png" WidthRequest="44" HeightRequest="44" Aspect="AspectFit" VerticalOptions="Center"/>
   <Label Grid.Column="1" Text="CONVERPRO" TextColor="White" FontSize="21" FontAttributes="Bold" VerticalOptions="Center"/>
   <Label Grid.Row="1" Grid.ColumnSpan="2" Text="Vídeo e áudio sem complicação" TextColor="#94A3B8" FontSize="12" Margin="0,8,0,0"/>
   <Label x:Name="VersionLabel" Grid.Row="2" Grid.ColumnSpan="2" TextColor="#64748B" FontSize="11" Margin="0,4,0,0"/>

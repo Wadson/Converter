@@ -10,6 +10,8 @@ public sealed record ToolInstallProgress(MediaTool Tool, string Stage, double Pr
 public sealed class ToolLocator(HttpClient http)
 {
     private static readonly SemaphoreSlim InstallGate = new(1, 1);
+    private readonly SemaphoreSlim _youtubeToolsGate = new(1, 1);
+    private (string YtDlp, string? Deno)? _youtubeTools;
     private string UserTools => Path.Combine(FileSystem.AppDataDirectory, "Tools");
 
     public string? Find(string name)
@@ -87,13 +89,19 @@ public sealed class ToolLocator(HttpClient http)
         }
         finally
         {
-            try { if (Directory.Exists(staging)) Directory.Delete(staging, true); } catch { }
+            try { if (Directory.Exists(staging)) Directory.Delete(staging, true); }
+            catch (Exception ex) { Debug.WriteLine($"Não foi possível remover a pasta temporária: {ex.Message}"); }
             InstallGate.Release();
         }
     }
 
     public async Task<(string YtDlp, string? Deno)> EnsureYoutubeToolsAsync(IProgress<Models.OperationProgress>? progress, CancellationToken token)
     {
+        if (_youtubeTools is { } cached && File.Exists(cached.YtDlp) && (cached.Deno is null || File.Exists(cached.Deno))) return cached;
+        await _youtubeToolsGate.WaitAsync(token);
+        try
+        {
+            if (_youtubeTools is { } current && File.Exists(current.YtDlp) && (current.Deno is null || File.Exists(current.Deno))) return current;
         var yt = await DetectAsync(MediaTool.YtDlp, token);
         if (!yt.IsValid)
         {
@@ -106,7 +114,10 @@ public sealed class ToolLocator(HttpClient http)
             var adapter = new Progress<ToolInstallProgress>(value => progress?.Report(new(value.Progress * 100, value.Message)));
             deno = await InstallAsync(MediaTool.Deno, adapter, token);
         }
-        return (yt.Path!, deno.IsValid ? deno.Path : null);
+            _youtubeTools = (yt.Path!, deno.IsValid ? deno.Path : null);
+            return _youtubeTools.Value;
+        }
+        finally { _youtubeToolsGate.Release(); }
     }
 
     private async Task DownloadAsync(string url, string destination, MediaTool tool, IProgress<ToolInstallProgress> progress, CancellationToken token)

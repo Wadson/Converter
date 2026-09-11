@@ -51,13 +51,13 @@ public sealed class MainViewModel(YoutubeDownloadService youtube, MediaService m
             if (choice is null) return;
             if (choice.Value)
             {
-                Status = "Carregando playlist...";
+                Status = "Carregando informações da playlist...";
                 var playlist = await youtube.GetPlaylistAsync(parsed.PlaylistId!, token);
-                foreach (var item in playlist.Videos.Where(v => Downloads.All(x => x.Source != v.Source)))
+                foreach (var item in playlist.Videos.Where(v => Downloads.All(x => !string.Equals(x.Source, v.Source, StringComparison.OrdinalIgnoreCase))))
                 {
                     Downloads.Add(new MediaQueueItem(item.Source, item.Title) { PlaylistName = playlist.Title });
                 }
-                Status = $"Playlist carregada: {playlist.Videos.Count} vídeos.";
+                Status = $"Vídeos encontrados: {playlist.Videos.Count}";
                 NotifyQueueState();
                 return;
             }
@@ -111,7 +111,7 @@ public sealed class MainViewModel(YoutubeDownloadService youtube, MediaService m
         Func<MediaQueueItem, IProgress<OperationProgress>, CancellationToken, Task> action)
     {
         if (IsBusy) return false;
-        var items = source.Where(x => x.IsSelected && x.Status is QueueItemStatus.Pending or QueueItemStatus.Running or QueueItemStatus.Failed).ToList();
+        var items = source.Where(x => x.IsSelected && x.Status is QueueItemStatus.Pending or QueueItemStatus.Running or QueueItemStatus.Failed or QueueItemStatus.Paused).ToList();
         if (items.Count == 0) { Status = "Nenhum item pendente selecionado."; return false; }
         Directory.CreateDirectory(OutputDirectory);
         _operation = new(); IsBusy = true; IsPaused = false;
@@ -122,13 +122,20 @@ public sealed class MainViewModel(YoutubeDownloadService youtube, MediaService m
             for (var index = 0; index < total; index++)
             {
                 var item = items[index];
-                item.Status = QueueItemStatus.Running; item.Error = null; item.Progress = 0; NotifyQueueState();
+                item.Status = QueueItemStatus.Preparing; item.Error = null; item.Progress = 0; NotifyQueueState();
                 Counter = $"{index + 1}/{total}";
                 var itemIndex = index;
                 var progress = new Progress<OperationProgress>(p => MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    if (p.Percent >= 0) { item.Progress = Math.Clamp(p.Percent / 100d, 0, 1); Progress = Math.Clamp((itemIndex + item.Progress) / total, 0, 1); }
-                    Status = $"Processando {Counter}: {p.Message}";
+                    if (p.Percent >= 0)
+                    {
+                        item.Progress = Math.Max(item.Progress, Math.Clamp(p.Percent / 100d, 0, 1));
+                        Progress = Math.Max(Progress, Math.Clamp((itemIndex + item.Progress) / total, 0, 1));
+                    }
+                    item.Status = p.Message.StartsWith("Baixando", StringComparison.OrdinalIgnoreCase) ? QueueItemStatus.Downloading
+                        : p.Message.StartsWith("Convertendo", StringComparison.OrdinalIgnoreCase) ? QueueItemStatus.Converting
+                        : p.Message.StartsWith("Mesclando", StringComparison.OrdinalIgnoreCase) ? QueueItemStatus.Merging : QueueItemStatus.Running;
+                    Status = $"{p.Message} {index + 1} de {total} — {item.Title}";
                 }));
                 try
                 {
@@ -140,11 +147,11 @@ public sealed class MainViewModel(YoutubeDownloadService youtube, MediaService m
                         if (File.Exists(output)) item.OutputSize = new FileInfo(output).Length;
                     }
                     AddLog(OperationName(source), item.Title, "Concluído", "Processamento concluído com sucesso.");
-                    Progress = (index + 1d) / total;
+                    Progress = Math.Max(Progress, (index + 1d) / total);
                 }
                 catch (OperationCanceledException) when (_operation.IsCancellationRequested)
                 {
-                    item.Status = QueueItemStatus.Pending;
+                    item.Status = QueueItemStatus.Paused;
                     throw;
                 }
                 catch (Exception ex)
@@ -153,7 +160,10 @@ public sealed class MainViewModel(YoutubeDownloadService youtube, MediaService m
                     AddLog(OperationName(source), item.Title, "Falhou", "Não foi possível processar este item.", ex.ToString());
                 }
             }
-            Status = items.Any(x => x.Status == QueueItemStatus.Failed) ? "Fila concluída com algumas falhas." : "Fila concluída.";
+            var failures = items.Count(x => x.Status == QueueItemStatus.Failed);
+            Status = failures == 0 ? $"Playlist concluída: {total} de {total} vídeos."
+                : $"Playlist concluída: {total - failures} de {total} vídeos; {failures} falhou.";
+            Progress = 1;
             completed = true;
         }
         catch (OperationCanceledException) { Status = IsPaused ? "Operação pausada. Use Continuar." : "Operação cancelada."; }

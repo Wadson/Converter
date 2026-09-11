@@ -24,7 +24,7 @@ namespace ConverPro.WinUI
                     File.WriteAllText(Path.Combine(Path.GetTempPath(), "ConverPro-crash.log"),
                         $"{DateTime.Now:O}\r\n{e.Message}\r\n{e.Exception}");
                 }
-                catch { }
+                catch (Exception writeError) { System.Diagnostics.Debug.WriteLine($"Não foi possível gravar o relatório de falha: {writeError.Message}"); }
             };
         }
 

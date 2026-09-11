@@ -31,10 +31,10 @@
 		<ApplicationId>br.com.converpro.desktop</ApplicationId>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>2.7.1</ApplicationDisplayVersion>
-		<ApplicationVersion>271</ApplicationVersion>
-		<AssemblyVersion>2.7.1</AssemblyVersion>
-		<FileVersion>2.7.1</FileVersion>
+		<ApplicationDisplayVersion>2.7.2</ApplicationDisplayVersion>
+		<ApplicationVersion>2.7.2</ApplicationVersion>
+		<AssemblyVersion>2.7.2</AssemblyVersion>
+		<FileVersion>2.7.2</FileVersion>
 
 		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
 		<WindowsPackageType>None</WindowsPackageType>
@@ -53,7 +53,7 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" Color="Transparent" />
 
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
@@ -76,9 +76,9 @@
 
 	<ItemGroup>
 		<PackageReference Include="FFMpegCore" Version="5.4.0" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.20" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
-		<PackageReference Include="YoutubeExplode" Version="6.6.1" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.101" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.12" />
+		<PackageReference Include="YoutubeExplode" Version="6.6.2" />
 	</ItemGroup>
 
 </Project>

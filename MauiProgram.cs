@@ -15,7 +15,8 @@ public static class MauiProgram
             fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
             fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
         });
-        builder.Services.AddSingleton(new HttpClient { Timeout = Timeout.InfiniteTimeSpan });
+        // ResponseHeadersRead in ToolLocator keeps transfers streaming; this bounds only connection/header stalls.
+        builder.Services.AddSingleton(new HttpClient { Timeout = TimeSpan.FromSeconds(30) });
         builder.Services.AddSingleton<ProcessRunner>();
         builder.Services.AddSingleton<ToolLocator>();
         builder.Services.AddSingleton<MediaService>();
