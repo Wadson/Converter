@@ -1,5 +1,0 @@
-D:\Projetos\Converter\obj\Release\net10.0-windows10.0.19041.0\win-x64\ConverPro.csproj.AssemblyReference.cache
-D:\Projetos\Converter\obj\Release\net10.0-windows10.0.19041.0\win-x64\mauiimage.inputs
-D:\Projetos\Converter\obj\Release\net10.0-windows10.0.19041.0\win-x64\mauifont.inputs
-D:\Projetos\Converter\obj\Release\net10.0-windows10.0.19041.0\win-x64\mauisplash.inputs
-D:\Projetos\Converter\obj\Release\net10.0-windows10.0.19041.0\win-x64\mauimanifest.stamp
