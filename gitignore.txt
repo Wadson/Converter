@@ -1,0 +1,48 @@
+.Rproj.user
+.Rhistory
+.Rdata
+.httr-oauth
+.DS_Store
+
+# Working docs (specs, notes) — not versioned
+docs/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+dist/
+.pytest_cache/
+.ruff_cache/
+
+# Reference editions corpus: copyrighted ebooks for verse-level QA only,
+# never redistributed. Entirely private — the manifest also points at sources.
+refs/
+
+# Verse-level QA tooling that operates on the gitignored reference corpus.
+scripts/refdiff.py
+scripts/scrape_*.py
+
+# Playwright MCP working dir (snapshots, screenshots, console logs)
+.playwright-mcp/
+
+# ==========================================
+# .NET / .NET MAUI (Adicionado para o projeto ConverPro)
+# ==========================================
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+.vs/
+.codex-obj/
+*.csproj.user
+*.xaml.g.cs
+*.xaml.g.i.cs
+*.AssemblyInfo.cs
+project.assets.json
+project.nuget.cache
+*.nuget.props
+*.nuget.targets
+*.sln.docstates
